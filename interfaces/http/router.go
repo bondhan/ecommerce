@@ -3,13 +3,19 @@ package handler
 import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"net/http"
 )
 
-func NewRouter(hndl *Handler) *chi.Mux {
+func NewRouter(hnd *Handler) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
 
-	r.Mount("/api/v1/", http.NotFoundHandler())
+	r.Route("/cashiers", func(rc chi.Router) {
+		rc.Post("/", hnd.cashier.Create)
+		rc.Get("/", hnd.cashier.List)
+		rc.Get("/{id}", hnd.cashier.Detail)
+		rc.Put("/{id}", hnd.cashier.Update)
+		rc.Delete("/{id}", hnd.cashier.Delete)
+	})
+
 	return r
 }

@@ -1,7 +1,7 @@
 package config
 
 const (
-	Production = "PRODUCTION"
+	Production = "production"
 )
 
 func NewLogConf(env string, appName string) (bool, map[string]interface{}) {
