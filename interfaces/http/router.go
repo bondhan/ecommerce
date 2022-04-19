@@ -41,5 +41,9 @@ func NewRouter(hnd *Handler) *chi.Mux {
 		rc.Get("/{id}", hnd.product.Detail)
 	})
 
+	r.Route("/orders", func(rc chi.Router) {
+		rc.Post("/subtotal", hnd.order.SubTotal)
+	})
+
 	return r
 }

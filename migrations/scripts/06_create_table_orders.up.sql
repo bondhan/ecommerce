@@ -1,11 +1,13 @@
 CREATE TABLE `orders`
 (
     `id`              bigint    NOT NULL AUTO_INCREMENT,
-    `totalPrice`      int       not null default '0',
-    `totalPaid`       int       not null default '0',
-    `totalReturn`     int       not null default '0',
+    `total_price`     int       not null default '0',
+    `total_paid`      int       not null default '0',
+    `total_return`    int       not null default '0',
     `cashier_id`      bigint    NOT NULL,
     `payment_type_id` bigint    NOT NULL,
+    `invoice_pdf`     text               DEFAULT NULL,
+    `downloaded`      bool               DEFAULT FALSE,
     `created_at`      timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`      timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `deleted_at`      timestamp NULL,

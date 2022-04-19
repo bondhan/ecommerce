@@ -60,7 +60,7 @@ func (c *productQ) Insert(req model.CreateProductReq) (domain.Products, error) {
 			return domain.Products{}, err
 		}
 
-		newProduct.DiscountID = disc.ID
+		newProduct.DiscountID = &disc.ID
 	}
 
 	err := tx.Create(&newProduct).Error

@@ -37,3 +37,10 @@ func Dot(v int64) string {
 	parts[j] = strconv.Itoa(int(v))
 	return sign + strings.Join(parts[j:], ".")
 }
+
+func TrimSuffix(s, suffix string) string {
+	if strings.HasSuffix(s, suffix) {
+		s = s[:len(s)-len(suffix)]
+	}
+	return s
+}

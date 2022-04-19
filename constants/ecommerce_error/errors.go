@@ -7,5 +7,6 @@ var (
 	ErrCategoryNotFound  = errors.New("Category Not Found")
 	ErrPaymentNotFound   = errors.New("Payment Not Found")
 	ErrProductNotFound   = errors.New("Product Not Found")
+	ErrOrderNotFound     = errors.New("Order Not Found")
 	ErrInvalidParameters = errors.New("Invalid Parameters")
 )

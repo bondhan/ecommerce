@@ -17,6 +17,10 @@ import (
 	queryproduct "github.com/bondhan/ecommerce/modules/product/query"
 	usecaseproduct "github.com/bondhan/ecommerce/modules/product/usecase"
 
+	presenterorder "github.com/bondhan/ecommerce/modules/order/presenter"
+	queryorder "github.com/bondhan/ecommerce/modules/order/query"
+	usecaseorder "github.com/bondhan/ecommerce/modules/order/usecase"
+
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -26,6 +30,7 @@ type Handler struct {
 	category presentercategory.ICategoryP
 	payment  presenterpayment.IPaymentP
 	product  presenterproduct.IProductP
+	order    presenterorder.IOrderP
 }
 
 func NewHandler(logger *logrus.Logger, db *gorm.DB) *Handler {
@@ -45,10 +50,15 @@ func NewHandler(logger *logrus.Logger, db *gorm.DB) *Handler {
 	productUC := usecaseproduct.NewProductUC(logger, productQ)
 	productP := presenterproduct.NewProductP(productUC)
 
+	orderQ := queryorder.NewOrderQ(logger, db)
+	orderUC := usecaseorder.NewOrderUC(logger, orderQ, productQ, productUC)
+	orderP := presenterorder.NewOrderP(orderUC)
+
 	return &Handler{
 		cashier:  cashierP,
 		category: categoryP,
 		payment:  paymentP,
 		product:  productP,
+		order:    orderP,
 	}
 }

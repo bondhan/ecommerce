@@ -91,7 +91,7 @@ func (c productUC) List(req model.ProductPaginated) (model.ListResponse, error) 
 		if v.DiscountID != nil {
 			sf := ""
 			if v.Type == params.BuyN {
-				sf = fmt.Sprintf("Buy %d only Rp. %s", v.Qty, infrastructure.Dot(v.Price))
+				sf = fmt.Sprintf("Buy %d only Rp. %s", v.Qty, infrastructure.Dot(v.Result))
 			} else if v.Type == params.Percentage {
 				sf = fmt.Sprintf("Discout %d%% Rp. %s", v.Result, infrastructure.Dot(v.Price-(v.Result*v.Price/100)))
 			}
@@ -137,10 +137,11 @@ func (c productUC) Detail(id uint) (model.ProductDetail, error) {
 	if v.DiscountID != nil {
 		sf := ""
 		if v.Type == params.BuyN {
-			sf = fmt.Sprintf("Buy %d only Rp. %s", v.Qty, infrastructure.Dot(v.Price))
+			sf = fmt.Sprintf("Buy %d only Rp. %s", v.Qty, infrastructure.Dot(v.Result))
 		} else if v.Type == params.Percentage {
 			sf = fmt.Sprintf("Discout %d%% Rp. %s", v.Result, infrastructure.Dot(v.Price-(v.Result*v.Price/100)))
 		}
+
 		product.Discount = &model.DiscountDetail{
 			Qty:             v.Qty,
 			Type:            v.Type,
