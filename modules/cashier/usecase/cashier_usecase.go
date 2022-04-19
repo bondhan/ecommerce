@@ -26,8 +26,10 @@ func (c cashierUC) Create(req model.CreateCashierReq) (model.CreateCashierResp, 
 	}
 
 	nCashier := model.CreateCashierResp{
-		CashierID: newCashier.ID,
-		Name:      newCashier.Name,
+		Cashier: model.Cashier{
+			CashierID: newCashier.ID,
+			Name:      newCashier.Name,
+		},
 		PassCode:  newCashier.Passcode,
 		CreatedAt: newCashier.CreatedAt.UTC().Format(time.RFC3339),
 		UpdatedAt: newCashier.UpdatedAt.UTC().Format(time.RFC3339),

@@ -2,13 +2,11 @@ package domain
 
 import "gorm.io/gorm"
 
-type Cashiers struct {
+type Category struct {
 	gorm.Model
-	Name        string `gorm:"column:name"`
-	Passcode    string `gorm:"column:passcode"`
-	LoginStatus string `gorm:"column:login_status"`
+	Name string `gorm:"column:name"`
 }
 
-func (m *Cashiers) TableName() string {
-	return "cashiers"
+func (m *Category) TableName() string {
+	return "categories"
 }

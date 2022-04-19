@@ -6,7 +6,7 @@ CREATE TABLE `cashiers`
     `login_status` enum ('logged_in', 'logged_out', 'blocked') NOT NULL DEFAULT 'logged_out',
     `created_at`   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `deleted_at`   timestamp    NULL,
+    `deleted_at`   timestamp NULL,
     PRIMARY KEY (`id`),
     INDEX (`login_status`, `deleted_at`, `name`)
 ) ENGINE = InnoDB

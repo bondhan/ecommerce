@@ -21,21 +21,23 @@ func NewPaymentQ(logger *logrus.Logger, gDB *gorm.DB) IPaymentQ {
 	}
 }
 
-func (c *paymentQ) Insert(req model.CreatePaymentReq) (domain.Categories, error) {
-	newPayment := domain.Categories{
+func (c *paymentQ) Insert(req model.CreatePaymentReq) (domain.Payments, error) {
+	newPayment := domain.Payments{
 		Name: req.Name,
+		Type: req.Type,
+		Logo: req.Logo,
 	}
 
 	err := c.gormDB.Create(&newPayment).Error
 	if err != nil {
-		return domain.Categories{}, err
+		return domain.Payments{}, err
 	}
 
 	return newPayment, nil
 }
 
 func (c *paymentQ) Update(req model.CreatePaymentUpdate) error {
-	var oldPayment domain.Categories
+	var oldPayment domain.Payments
 	err := c.gormDB.Where("id = ?", req.ID).First(&oldPayment).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -45,7 +47,7 @@ func (c *paymentQ) Update(req model.CreatePaymentUpdate) error {
 	}
 
 	res := c.gormDB.Where("id = ? and updated_at = ?", oldPayment.ID, oldPayment.UpdatedAt).Model(&oldPayment).
-		Updates(domain.Categories{Name: req.Name})
+		Updates(domain.Payments{Name: req.Name, Type: req.Type, Logo: req.Logo})
 	if err != nil {
 		return err
 	}
@@ -61,7 +63,7 @@ func (c *paymentQ) Update(req model.CreatePaymentUpdate) error {
 }
 
 func (c *paymentQ) Delete(id uint) error {
-	var payment domain.Categories
+	var payment domain.Payments
 
 	res := c.gormDB.Unscoped().Where("id = ?", id).Model(&payment).Delete(&payment)
 	if res.Error != nil {
@@ -74,8 +76,8 @@ func (c *paymentQ) Delete(id uint) error {
 	return nil
 }
 
-func (c *paymentQ) List(req model.PaymentPaginated) ([]domain.Categories, int64, error) {
-	var categories []domain.Categories
+func (c *paymentQ) List(req model.PaymentPaginated) ([]domain.Payments, int64, error) {
+	var payments []domain.Payments
 	var limit, skip = 0, 0
 	var count int64
 
@@ -91,27 +93,27 @@ func (c *paymentQ) List(req model.PaymentPaginated) ([]domain.Categories, int64,
 		skip = (skip - 1) * limit
 	}
 
-	err := c.gormDB.Model(&categories).Count(&count).Error
+	err := c.gormDB.Model(&payments).Count(&count).Error
 	if err != nil {
-		return categories, count, err
+		return payments, count, err
 	}
 
-	err = c.gormDB.Limit(limit).Offset(skip).Order("id ASC").Find(&categories).Error
+	err = c.gormDB.Limit(limit).Offset(skip).Order("id ASC").Find(&payments).Error
 	if err != nil {
-		return categories, count, err
+		return payments, count, err
 	}
 
-	return categories, count, err
+	return payments, count, err
 }
 
-func (c *paymentQ) Detail(id uint) (domain.Categories, error) {
-	var payment domain.Categories
+func (c *paymentQ) Detail(id uint) (domain.Payments, error) {
+	var payment domain.Payments
 	err := c.gormDB.Where("id = ?", id).First(&payment).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return domain.Categories{}, ecommerceerror.ErrPaymentNotFound
+			return domain.Payments{}, ecommerceerror.ErrPaymentNotFound
 		}
-		return domain.Categories{}, err
+		return domain.Payments{}, err
 	}
 	return payment, err
 }

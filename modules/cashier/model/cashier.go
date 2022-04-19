@@ -14,8 +14,7 @@ import (
 )
 
 type CreateCashierResp struct {
-	CashierID uint   `json:"cashierId"`
-	Name      string `json:"name"`
+	Cashier
 	PassCode  string `json:"passcode"`
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
@@ -32,7 +31,7 @@ type Cashier struct {
 }
 
 type CreateCashierUpdate struct {
-	ID uint `json:"id"`
+	ID uint
 	CreateCashierReq
 }
 

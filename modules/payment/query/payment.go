@@ -6,9 +6,9 @@ import (
 )
 
 type IPaymentQ interface {
-	Insert(req model.CreatePaymentReq) (domain.Categories, error)
+	Insert(req model.CreatePaymentReq) (domain.Payments, error)
 	Update(req model.CreatePaymentUpdate) error
 	Delete(id uint) error
-	List(req model.PaymentPaginated) ([]domain.Categories, int64, error)
-	Detail(id uint) (domain.Categories, error)
+	List(req model.PaymentPaginated) ([]domain.Payments, int64, error)
+	Detail(id uint) (domain.Payments, error)
 }

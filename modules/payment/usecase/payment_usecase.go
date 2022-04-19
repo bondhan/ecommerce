@@ -26,8 +26,12 @@ func (c paymentUC) Create(req model.CreatePaymentReq) (model.CreatePaymentResp, 
 	}
 
 	nPayment := model.CreatePaymentResp{
-		PaymentID: newPayment.ID,
-		Name:      newPayment.Name,
+		Payment: model.Payment{
+			PaymentID: newPayment.ID,
+			Name:      newPayment.Name,
+			Type:      newPayment.Type,
+			Logo:      newPayment.Logo,
+		},
 		CreatedAt: newPayment.CreatedAt.UTC().Format(time.RFC3339),
 		UpdatedAt: newPayment.UpdatedAt.UTC().Format(time.RFC3339),
 	}
@@ -65,18 +69,20 @@ func (c paymentUC) List(req model.PaymentPaginated) (model.ListResponse, error) 
 		Limit: req.Limit,
 	}
 
-	categories := []model.Payment{}
+	payments := []model.Payment{}
 	for _, v := range data {
 		vv := model.Payment{
 			Name:      v.Name,
+			Type:      v.Type,
+			Logo:      v.Logo,
 			PaymentID: v.ID,
 		}
-		categories = append(categories, vv)
+		payments = append(payments, vv)
 	}
 
 	res := model.ListResponse{
-		Categories: categories,
-		Meta:       meta,
+		Payments: payments,
+		Meta:     meta,
 	}
 
 	return res, nil
@@ -89,6 +95,8 @@ func (c paymentUC) Detail(id uint) (model.Payment, error) {
 
 	payment := model.Payment{
 		Name:      data.Name,
+		Type:      data.Type,
+		Logo:      data.Logo,
 		PaymentID: data.ID,
 	}
 

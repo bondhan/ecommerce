@@ -2,13 +2,13 @@ package query
 
 import (
 	"github.com/bondhan/ecommerce/domain"
-	"github.com/bondhan/ecommerce/modules/cashier/model"
+	"github.com/bondhan/ecommerce/modules/category/model"
 )
 
-type ICashierQ interface {
-	Insert(req model.CreateCashierReq) (domain.Cashiers, error)
-	Update(req model.CreateCashierUpdate) error
+type ICategoryQ interface {
+	Insert(req model.CreateCategoryReq) (domain.Category, error)
+	Update(req model.CreateCategoryUpdate) error
 	Delete(id uint) error
-	List(req model.CashierPaginated) ([]domain.Cashiers, int64, error)
-	Detail(id uint) (domain.Cashiers, error)
+	List(req model.CategoryPaginated) ([]domain.Category, int64, error)
+	Detail(id uint) (domain.Category, error)
 }

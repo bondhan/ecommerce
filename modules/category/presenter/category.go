@@ -2,29 +2,29 @@ package presenter
 
 import (
 	. "github.com/bondhan/ecommerce/infrastructure"
-	"github.com/bondhan/ecommerce/modules/cashier/model"
-	"github.com/bondhan/ecommerce/modules/cashier/usecase"
+	"github.com/bondhan/ecommerce/modules/category/model"
+	"github.com/bondhan/ecommerce/modules/category/usecase"
 	"net/http"
 )
 
-type cashierP struct {
-	CashierUC usecase.ICashierUC
+type categoryP struct {
+	CategoryUC usecase.ICategoryUC
 }
 
-func NewCashierP(cashierUC usecase.ICashierUC) ICashierP {
-	return &cashierP{
-		CashierUC: cashierUC,
+func NewCategoryP(categoryUC usecase.ICategoryUC) ICategoryP {
+	return &categoryP{
+		CategoryUC: categoryUC,
 	}
 }
 
-func (c *cashierP) Create(w http.ResponseWriter, r *http.Request) {
-	req, err := model.NewCashier(r)
+func (c *categoryP) Create(w http.ResponseWriter, r *http.Request) {
+	req, err := model.NewCategory(r)
 	if err != nil {
 		Error(w, http.StatusBadRequest, err)
 		return
 	}
 
-	resp, err := c.CashierUC.Create(req)
+	resp, err := c.CategoryUC.Create(req)
 	if err != nil {
 		Error(w, http.StatusBadRequest, err)
 		return
@@ -33,30 +33,14 @@ func (c *cashierP) Create(w http.ResponseWriter, r *http.Request) {
 	SuccessJSON(w, http.StatusOK, resp)
 }
 
-func (c *cashierP) Update(w http.ResponseWriter, r *http.Request) {
-	req, err := model.UpdateCashier(r)
+func (c *categoryP) Update(w http.ResponseWriter, r *http.Request) {
+	req, err := model.UpdateCategory(r)
 	if err != nil {
 		Error(w, http.StatusBadRequest, err)
 		return
 	}
 
-	err = c.CashierUC.Update(req)
-	if err != nil {
-		Error(w, http.StatusBadRequest, err)
-		return
-	}
-
-	Success(w, http.StatusOK)
-}
-
-func (c *cashierP) Delete(w http.ResponseWriter, r *http.Request) {
-	id, err := model.GetCashierID(r)
-	if err != nil {
-		Error(w, http.StatusBadRequest, err)
-		return
-	}
-
-	err = c.CashierUC.Delete(id)
+	err = c.CategoryUC.Update(req)
 	if err != nil {
 		Error(w, http.StatusBadRequest, err)
 		return
@@ -64,13 +48,29 @@ func (c *cashierP) Delete(w http.ResponseWriter, r *http.Request) {
 
 	Success(w, http.StatusOK)
 }
-func (c *cashierP) List(w http.ResponseWriter, r *http.Request) {
-	page, err := model.NewCashierPaginatedReq(r)
+
+func (c *categoryP) Delete(w http.ResponseWriter, r *http.Request) {
+	id, err := model.GetCategoryID(r)
 	if err != nil {
 		Error(w, http.StatusBadRequest, err)
 		return
 	}
-	res, err := c.CashierUC.List(page)
+
+	err = c.CategoryUC.Delete(id)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	Success(w, http.StatusOK)
+}
+func (c *categoryP) List(w http.ResponseWriter, r *http.Request) {
+	page, err := model.NewCategoryPaginatedReq(r)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+	res, err := c.CategoryUC.List(page)
 	if err != nil {
 		Error(w, http.StatusBadRequest, err)
 		return
@@ -79,14 +79,14 @@ func (c *cashierP) List(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (c *cashierP) Detail(w http.ResponseWriter, r *http.Request) {
-	id, err := model.GetCashierID(r)
+func (c *categoryP) Detail(w http.ResponseWriter, r *http.Request) {
+	id, err := model.GetCategoryID(r)
 	if err != nil {
 		Error(w, http.StatusBadRequest, err)
 		return
 	}
 
-	res, err := c.CashierUC.Detail(id)
+	res, err := c.CategoryUC.Detail(id)
 	if err != nil {
 		Error(w, http.StatusBadRequest, err)
 		return

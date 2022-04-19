@@ -14,23 +14,26 @@ import (
 )
 
 type CreatePaymentResp struct {
-	PaymentID uint   `json:"paymentId"`
-	Name      string `json:"name"`
+	Payment
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
 }
 
 type CreatePaymentReq struct {
-	Name string `json:"name"`
+	Name string  `json:"name"`
+	Type string  `json:"type"`
+	Logo *string `json:"logo"`
 }
 
 type Payment struct {
-	PaymentID uint   `json:"paymentId"`
-	Name      string `json:"name"`
+	PaymentID uint    `json:"paymentId"`
+	Name      string  `json:"name"`
+	Type      string  `json:"type"`
+	Logo      *string `json:"logo"`
 }
 
 type CreatePaymentUpdate struct {
-	ID uint `json:"id"`
+	ID uint
 	CreatePaymentReq
 }
 
@@ -95,27 +98,27 @@ func NewPaymentPaginatedReq(r *http.Request) (PaymentPaginated, error) {
 	skip := r.URL.Query().Get(params.Skip)
 	limit := r.URL.Query().Get(params.Limit)
 
-	categories := PaymentPaginatedReq{
+	payments := PaymentPaginatedReq{
 		Skip:  skip,
 		Limit: limit,
 	}
 
-	err := validation.ValidateStruct(&categories,
-		validation.Field(&categories.Limit, is.Digit),
-		validation.Field(&categories.Skip, is.Digit),
+	err := validation.ValidateStruct(&payments,
+		validation.Field(&payments.Limit, is.Digit),
+		validation.Field(&payments.Skip, is.Digit),
 	)
 
 	var l, s = 0, 0
 
-	if len(categories.Limit) > 0 {
-		l, err = strconv.Atoi(categories.Limit)
+	if len(payments.Limit) > 0 {
+		l, err = strconv.Atoi(payments.Limit)
 		if err != nil {
 			return PaymentPaginated{}, ecommerceerror.ErrInvalidParameters
 		}
 	}
 
-	if len(categories.Skip) > 0 {
-		s, err = strconv.Atoi(categories.Skip)
+	if len(payments.Skip) > 0 {
+		s, err = strconv.Atoi(payments.Skip)
 		if err != nil {
 			return PaymentPaginated{}, ecommerceerror.ErrInvalidParameters
 		}
@@ -135,6 +138,6 @@ type PaymentPaginated struct {
 }
 
 type ListResponse struct {
-	Categories []Payment      `json:"categories"'`
-	Meta       basemodel.Meta `json:"meta"'`
+	Payments []Payment      `json:"payments"'`
+	Meta     basemodel.Meta `json:"meta"'`
 }

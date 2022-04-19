@@ -2,51 +2,43 @@ package usecase
 
 import (
 	basemodel "github.com/bondhan/ecommerce/domain/base_model"
-	"github.com/bondhan/ecommerce/modules/cashier/model"
-	"github.com/bondhan/ecommerce/modules/cashier/query"
+	"github.com/bondhan/ecommerce/modules/category/model"
+	"github.com/bondhan/ecommerce/modules/category/query"
 	"github.com/sirupsen/logrus"
 	"time"
 )
 
-type cashierUC struct {
-	logger   *logrus.Logger
-	cashierQ query.ICashierQ
+type categoryUC struct {
+	logger    *logrus.Logger
+	categoryQ query.ICategoryQ
 }
 
-func NewCashierUC(logger *logrus.Logger, cashierQ query.ICashierQ) ICashierUC {
-	return &cashierUC{
-		logger:   logger,
-		cashierQ: cashierQ,
+func NewCategoryUC(logger *logrus.Logger, categoryQ query.ICategoryQ) ICategoryUC {
+	return &categoryUC{
+		logger:    logger,
+		categoryQ: categoryQ,
 	}
 }
-func (c cashierUC) Create(req model.CreateCashierReq) (model.CreateCashierResp, error) {
-	newCashier, err := c.cashierQ.Insert(req)
+func (c categoryUC) Create(req model.CreateCategoryReq) (model.CreateCategoryResp, error) {
+	newCategory, err := c.categoryQ.Insert(req)
 	if err != nil {
-		return model.CreateCashierResp{}, err
+		return model.CreateCategoryResp{}, err
 	}
 
-	nCashier := model.CreateCashierResp{
-		CashierID: newCashier.ID,
-		Name:      newCashier.Name,
-		PassCode:  newCashier.Passcode,
-		CreatedAt: newCashier.CreatedAt.UTC().Format(time.RFC3339),
-		UpdatedAt: newCashier.UpdatedAt.UTC().Format(time.RFC3339),
+	nCategory := model.CreateCategoryResp{
+		Category: model.Category{
+			CategoryID: newCategory.ID,
+			Name:       newCategory.Name,
+		},
+		CreatedAt: newCategory.CreatedAt.UTC().Format(time.RFC3339),
+		UpdatedAt: newCategory.UpdatedAt.UTC().Format(time.RFC3339),
 	}
 
-	return nCashier, nil
+	return nCategory, nil
 }
 
-func (c cashierUC) Update(req model.CreateCashierUpdate) error {
-	err := c.cashierQ.Update(req)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (c cashierUC) Delete(id uint) error {
-	err := c.cashierQ.Delete(id)
+func (c categoryUC) Update(req model.CreateCategoryUpdate) error {
+	err := c.categoryQ.Update(req)
 	if err != nil {
 		return err
 	}
@@ -54,8 +46,17 @@ func (c cashierUC) Delete(id uint) error {
 	return nil
 }
 
-func (c cashierUC) List(req model.CashierPaginated) (model.ListResponse, error) {
-	data, count, err := c.cashierQ.List(req)
+func (c categoryUC) Delete(id uint) error {
+	err := c.categoryQ.Delete(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c categoryUC) List(req model.CategoryPaginated) (model.ListResponse, error) {
+	data, count, err := c.categoryQ.List(req)
 	if err != nil {
 		return model.ListResponse{}, err
 	}
@@ -66,32 +67,32 @@ func (c cashierUC) List(req model.CashierPaginated) (model.ListResponse, error) 
 		Limit: req.Limit,
 	}
 
-	cashiers := []model.Cashier{}
+	categories := []model.Category{}
 	for _, v := range data {
-		vv := model.Cashier{
-			Name:      v.Name,
-			CashierID: v.ID,
+		vv := model.Category{
+			Name:       v.Name,
+			CategoryID: v.ID,
 		}
-		cashiers = append(cashiers, vv)
+		categories = append(categories, vv)
 	}
 
 	res := model.ListResponse{
-		Cashiers: cashiers,
-		Meta:     meta,
+		Categories: categories,
+		Meta:       meta,
 	}
 
 	return res, nil
 }
-func (c cashierUC) Detail(id uint) (model.Cashier, error) {
-	data, err := c.cashierQ.Detail(id)
+func (c categoryUC) Detail(id uint) (model.Category, error) {
+	data, err := c.categoryQ.Detail(id)
 	if err != nil {
-		return model.Cashier{}, err
+		return model.Category{}, err
 	}
 
-	cashier := model.Cashier{
-		Name:      data.Name,
-		CashierID: data.ID,
+	category := model.Category{
+		Name:       data.Name,
+		CategoryID: data.ID,
 	}
 
-	return cashier, nil
+	return category, nil
 }

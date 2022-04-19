@@ -2,7 +2,7 @@ package presenter
 
 import "net/http"
 
-type ICategoryP interface {
+type IProductP interface {
 	Create(w http.ResponseWriter, r *http.Request)
 	Update(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
