@@ -90,7 +90,7 @@ func (c *paymentQ) List(req model.PaymentPaginated) ([]domain.Payments, int64, e
 	if req.Skip < 1 {
 		skip = 0
 	} else {
-		skip = (skip - 1) * limit
+		//skip = (skip - 1) * limit
 	}
 
 	err := c.gormDB.Model(&payments).Count(&count).Error

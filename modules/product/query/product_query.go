@@ -172,7 +172,7 @@ func (c *productQ) List(req model.ProductPaginated) ([]model.ProductRes, int64, 
 	if req.Skip < 1 {
 		skip = 0
 	} else {
-		skip = (skip - 1) * limit
+		//skip = (skip - 1) * limit
 	}
 
 	queryC := `
@@ -226,7 +226,9 @@ func (c *productQ) List(req model.ProductPaginated) ([]model.ProductRes, int64, 
 			p.deleted_at is null
 	`
 
-	err = c.gormDB.Raw(fmt.Sprintf("%s and %s", query, wquery)).
+	qq := fmt.Sprintf("%s and %s LIMIT %d OFFSET %d", query, wquery, limit, skip)
+
+	err = c.gormDB.Raw(qq).
 		Limit(limit).Offset(skip).Order("id ASC").Scan(&products).Error
 	if err != nil {
 		return products, count, err

@@ -68,9 +68,19 @@ func (c *orderP) SubTotal(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *orderP) List(w http.ResponseWriter, r *http.Request) {
+	page, err := model.NewOrderPaginatedReq(r)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
 
-	SuccessJSON(w, http.StatusOK, struct{}{})
+	res, err := c.OrderUC.List(page)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
 
+	SuccessJSON(w, http.StatusOK, res)
 }
 
 func (c *orderP) Detail(w http.ResponseWriter, r *http.Request) {

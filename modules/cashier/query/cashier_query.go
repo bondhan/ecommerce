@@ -91,7 +91,7 @@ func (c *cashierQ) List(req model.CashierPaginated) ([]domain.Cashiers, int64, e
 	if req.Skip < 1 {
 		skip = 0
 	} else {
-		skip = (skip - 1) * limit
+		//skip = (skip - 1) * limit
 	}
 
 	err := c.gormDB.Model(&cashiers).Count(&count).Error

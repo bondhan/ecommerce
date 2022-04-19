@@ -5,7 +5,11 @@ import (
 	ecommerceerror "github.com/bondhan/ecommerce/constants/ecommerce_error"
 	"github.com/bondhan/ecommerce/constants/params"
 	basemodel "github.com/bondhan/ecommerce/domain/base_model"
+	modelcashier "github.com/bondhan/ecommerce/modules/cashier/model"
+	modelpayment "github.com/bondhan/ecommerce/modules/payment/model"
 	"github.com/bondhan/ecommerce/modules/product/model"
+	"time"
+
 	"github.com/go-chi/chi"
 	"github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
@@ -138,11 +142,6 @@ type OrderPaginated struct {
 	Limit int `json:"limit"`
 }
 
-type ListResponse struct {
-	Orders []Order        `json:"orders"'`
-	Meta   basemodel.Meta `json:"meta"'`
-}
-
 type SubTotalReq struct {
 	ProductID uint  `json:"productId"'`
 	Qty       int64 `json:"qty"'`
@@ -227,4 +226,40 @@ type OrderTotal struct {
 type OrderTotalResp struct {
 	Order    OrderTotal        `json:"order"`
 	Products []ProductSubTotal `json:"products"`
+}
+
+type OrderDetailDB struct {
+	OrderID        uint      `gorm:"column:id"`
+	CashiersID     uint      `gorm:"column:cashier_id"`
+	PaymentTypesID uint      `gorm:"column:payment_type_id"`
+	TotalPrice     int64     `gorm:"column:total_price"`
+	TotalPaid      int64     `gorm:"column:total_paid"`
+	TotalReturn    int64     `gorm:"column:total_return"`
+	UpdatedAt      time.Time `gorm:"column:updated_at"`
+	CreatedAt      time.Time `gorm:"column:created_at"`
+	CashierID      uint      `gorm:"column:cashier_id"`
+	CashierName    string    `gorm:"column:cashier_name"`
+	PaymentTypeID  uint      `gorm:"column:payment_type_id"`
+	PaymentName    string    `gorm:"column:payment_name"`
+	PaymentType    string    `gorm:"column:payment_type"`
+	PaymentLogo    *string   `gorm:"column:payment_logo"`
+}
+
+type OrderDetail struct {
+	OrderID        uint                 `json:"orderId"`
+	CashiersID     uint                 `json:"cashiersId"`
+	PaymentTypesID uint                 `json:"paymentTypesId"`
+	TotalPrice     int64                `json:"totalPrice"`
+	TotalPaid      int64                `json:"totalPaid"`
+	TotalReturn    int64                `json:"totalReturn"`
+	ReceiptID      string               `json:"receiptId"`
+	UpdatedAt      string               `json:"updatedAt"`
+	CreatedAt      string               `json:"createdAt"`
+	Cashier        modelcashier.Cashier `json:"cashier"`
+	Payment        modelpayment.Payment `json:"payment"`
+}
+
+type ListOrderResponse struct {
+	OrderDetails []OrderDetail  `json:"orders"'`
+	Meta         basemodel.Meta `json:"meta"'`
 }

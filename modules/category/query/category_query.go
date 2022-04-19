@@ -88,7 +88,7 @@ func (c *categoryQ) List(req model.CategoryPaginated) ([]domain.Category, int64,
 	if req.Skip < 1 {
 		skip = 0
 	} else {
-		skip = (skip - 1) * limit
+		//skip = (skip - 1) * limit
 	}
 
 	err := c.gormDB.Model(&categories).Count(&count).Error

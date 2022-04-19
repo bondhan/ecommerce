@@ -2,6 +2,7 @@ package query
 
 import (
 	"errors"
+	"fmt"
 	"github.com/bondhan/ecommerce/constants/ecommerce_error"
 	"github.com/bondhan/ecommerce/domain"
 	"github.com/bondhan/ecommerce/modules/order/model"
@@ -113,8 +114,8 @@ func (c *orderQ) Delete(id uint) error {
 	return nil
 }
 
-func (c *orderQ) List(req model.OrderPaginated) ([]domain.Orders, int64, error) {
-	var orders []domain.Orders
+func (c *orderQ) List(req model.OrderPaginated) ([]model.OrderDetailDB, int64, error) {
+	orders := []model.OrderDetailDB{}
 	var limit, skip = 0, 0
 	var count int64
 
@@ -127,15 +128,61 @@ func (c *orderQ) List(req model.OrderPaginated) ([]domain.Orders, int64, error) 
 	if req.Skip < 1 {
 		skip = 0
 	} else {
-		skip = (skip - 1) * limit
+		//skip = (skip - 1) * limit
 	}
 
-	err := c.gormDB.Model(&orders).Count(&count).Error
+	queryC := `
+		select
+			count(*)
+		from
+			orders o
+		inner join payment_types pt on
+			pt.id = o.payment_type_id
+		inner join cashiers c on
+			c.id = o.cashier_id
+		where
+			o.deleted_at is null
+			and pt.deleted_at is NULL 
+			and c.deleted_at is null
+	`
+
+	err := c.gormDB.Raw(queryC).Model(&domain.Products{}).Count(&count).Error
 	if err != nil {
 		return orders, count, err
 	}
 
-	err = c.gormDB.Limit(limit).Offset(skip).Order("id ASC").Find(&orders).Error
+	query := `
+		select
+			o.id,
+			o.cashier_id,
+			o.payment_type_id,
+			o.total_price,
+			o.total_paid,
+			o.total_return,
+			o.updated_at,
+			o.created_at,
+			c.id as cashier_id,
+			c.name as cashier_name,
+			pt.id as payment_type_id, 
+			pt.name as payment_name,
+			pt.type as payment_type,
+			pt.logo as payment_logo	
+		from
+			orders o
+		inner join payment_types pt on
+			pt.id = o.payment_type_id
+		inner join cashiers c on
+			c.id = o.cashier_id
+		where
+			o.deleted_at is null
+			and pt.deleted_at is NULL 
+			and c.deleted_at is null
+	`
+
+	qq := fmt.Sprintf("%s LIMIT %d OFFSET %d", query, limit, skip)
+
+	err = c.gormDB.Raw(qq).
+		Limit(limit).Offset(skip).Order("id ASC").Scan(&orders).Error
 	if err != nil {
 		return orders, count, err
 	}

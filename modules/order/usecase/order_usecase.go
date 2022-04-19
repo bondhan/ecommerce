@@ -3,8 +3,11 @@ package usecase
 import (
 	"fmt"
 	"github.com/bondhan/ecommerce/constants/params"
+	basemodel "github.com/bondhan/ecommerce/domain/base_model"
+	modelcashier "github.com/bondhan/ecommerce/modules/cashier/model"
 	"github.com/bondhan/ecommerce/modules/order/model"
 	"github.com/bondhan/ecommerce/modules/order/query"
+	modelpayment "github.com/bondhan/ecommerce/modules/payment/model"
 	queryproduct "github.com/bondhan/ecommerce/modules/product/query"
 	usecaseproduct "github.com/bondhan/ecommerce/modules/product/usecase"
 	"time"
@@ -116,33 +119,54 @@ func (c orderUC) Delete(id uint) error {
 	return nil
 }
 
-func (c orderUC) List(req model.OrderPaginated) (model.ListResponse, error) {
-	//data, count, err := c.orderQ.List(req)
-	//if err != nil {
-	//	return model.ListResponse{}, err
-	//}
-	//
-	//meta := basemodel.Meta{
-	//	Total: count,
-	//	Skip:  req.Skip,
-	//	Limit: req.Limit,
-	//}
-	//
-	//orders := []model.Order{}
-	//for _, v := range data {
-	//	vv := model.Order{
-	//		Name:    v.TotalPrice,
-	//		OrderID: v.ID,
-	//	}
-	//	orders = append(orders, vv)
-	//}
-	//
-	//res := model.ListResponse{
-	//	Orders: orders,
-	//	Meta:   meta,
-	//}
+func (c orderUC) List(req model.OrderPaginated) (model.ListOrderResponse, error) {
+	data, count, err := c.orderQ.List(req)
+	if err != nil {
+		return model.ListOrderResponse{}, err
+	}
 
-	return model.ListResponse{}, nil
+	meta := basemodel.Meta{
+		Total: count,
+		Skip:  req.Skip,
+		Limit: req.Limit,
+	}
+
+	orders := []model.OrderDetail{}
+	for _, v := range data {
+
+		cashier := modelcashier.Cashier{
+			CashierID: v.CashiersID,
+			Name:      v.CashierName,
+		}
+		payment := modelpayment.Payment{
+			PaymentID: v.PaymentTypesID,
+			Name:      v.PaymentName,
+			Type:      v.PaymentType,
+			Logo:      v.PaymentLogo,
+		}
+		vv := model.OrderDetail{
+			OrderID:     v.OrderID,
+			TotalPrice:  v.TotalPrice,
+			TotalPaid:   v.TotalPaid,
+			TotalReturn: v.TotalReturn,
+			ReceiptID:   fmt.Sprintf("ID%03d", v.OrderID),
+			UpdatedAt:   v.UpdatedAt.UTC().Format(time.RFC3339),
+			CreatedAt:   v.CreatedAt.UTC().Format(time.RFC3339),
+		}
+		vv.Cashier = cashier
+		vv.Payment = payment
+		vv.CashiersID = cashier.CashierID
+		vv.PaymentTypesID = payment.PaymentID
+
+		orders = append(orders, vv)
+	}
+
+	res := model.ListOrderResponse{
+		OrderDetails: orders,
+		Meta:         meta,
+	}
+
+	return res, nil
 }
 func (c orderUC) Detail(id uint) (model.Order, error) {
 	data, err := c.orderQ.Detail(id)
