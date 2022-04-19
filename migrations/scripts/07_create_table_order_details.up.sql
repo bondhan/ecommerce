@@ -6,7 +6,7 @@ CREATE TABLE `order_details`
     `qty`                int          not null default '0',
     `order_id`           bigint       NOT NULL,
     `product_id`         bigint       NOT NULL,
-    `discount_id`        bigint       NOT NULL,
+    `discount_id`        bigint       DEFAULT NULL,
     `total_normal_price` int          not null default '0',
     `total_final_price`  int          not null default '0',
     `created_at`         timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,

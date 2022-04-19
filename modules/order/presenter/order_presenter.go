@@ -18,17 +18,19 @@ func NewOrderP(orderUC usecase.IOrderUC) IOrderP {
 }
 
 func (c *orderP) Create(w http.ResponseWriter, r *http.Request) {
-	//req, err := model.NewOrder(r)
-	//if err != nil {
-	//	Error(w, http.StatusBadRequest, err)
-	//	return
-	//}
-	//
-	//resp, err := c.OrderUC.Create(req)
-	//if err != nil {
-	//	Error(w, http.StatusBadRequest, err)
-	//	return
-	//}
+	req, err := model.NewSOrder(r)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	res, err := c.OrderUC.Create(req)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	SuccessJSON(w, http.StatusOK, res)
 
 	SuccessJSON(w, http.StatusOK, struct{}{})
 }

@@ -188,3 +188,43 @@ type SubTotal struct {
 	Subtotal int64             `json:"subtotal"`
 	Products []ProductSubTotal `json:"products"`
 }
+
+type OrderReq struct {
+	PaymentID uint          `json:"paymentId"'`
+	TotalPaid int64         `json:"totalPaid"'`
+	Products  []SubTotalReq `json:"products"'`
+}
+
+func NewSOrder(r *http.Request) (OrderReq, error) {
+	var req OrderReq
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&req); err != nil {
+		return req, err
+	}
+
+	for _, v := range req.Products {
+		err := v.Validate()
+		if err != nil {
+			return req, err
+		}
+	}
+
+	return req, nil
+}
+
+type OrderTotal struct {
+	OrderID        uint   `json:"orderId"`
+	CashiersID     uint   `json:"cashiersId"`
+	PaymentTypesID uint   `json:"paymentTypesId"`
+	TotalPrice     int64  `json:"totalPrice"`
+	TotalPaid      int64  `json:"totalPaid"`
+	TotalReturn    int64  `json:"totalReturn"`
+	ReceiptID      string `json:"receiptId"`
+	UpdatedAt      string `json:"updatedAt"`
+	CreatedAt      string `json:"createdAt"`
+}
+
+type OrderTotalResp struct {
+	Order    OrderTotal        `json:"order"`
+	Products []ProductSubTotal `json:"products"`
+}

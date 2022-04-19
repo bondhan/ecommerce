@@ -45,6 +45,7 @@ type CreateProductReq struct {
 }
 
 type DiscountDetail struct {
+	ID              *uint  `json:"-"`
 	Qty             int64  `json:"qty"`
 	Type            string `json:"type"`
 	Result          int64  `json:"result"`

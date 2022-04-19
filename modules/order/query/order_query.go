@@ -21,11 +21,55 @@ func NewOrderQ(logger *logrus.Logger, gDB *gorm.DB) IOrderQ {
 	}
 }
 
-func (c *orderQ) Insert(req model.CreateOrderReq) (domain.Orders, error) {
-	newOrder := domain.Orders{}
+func (c *orderQ) Insert(req model.OrderTotal, data []model.ProductSubTotal) (domain.Orders, error) {
+	newOrder := domain.Orders{
+		TotalPrice:    req.TotalPrice,
+		TotalPaid:     req.TotalPaid,
+		TotalReturn:   req.TotalReturn,
+		CashierID:     req.CashiersID,
+		PaymentTypeID: req.PaymentTypesID,
+		InvoicePDF:    req.ReceiptID,
+		Downloaded:    0,
+	}
 
-	err := c.gormDB.Create(&newOrder).Error
+	//example of transactions on golang
+	tx := c.gormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	err := tx.Create(&newOrder).Error
 	if err != nil {
+		tx.Rollback()
+		return domain.Orders{}, err
+	}
+
+	for _, v := range data {
+		newOrderDetail := domain.OrderDetails{
+			Name:             v.Name,
+			Price:            v.Price,
+			Qty:              v.Qty,
+			OrderID:          newOrder.ID,
+			ProductID:        v.ProductID,
+			TotalNormalPrice: v.TotalNormalPrice,
+			TotalFinalPrice:  v.TotalFinalPrice,
+		}
+		if v.Discount != nil {
+			newOrderDetail.DiscountID = v.Discount.ID
+		}
+
+		err := tx.Create(&newOrderDetail).Error
+		if err != nil {
+			tx.Rollback()
+			return domain.Orders{}, err
+		}
+	}
+
+	err = tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
 		return domain.Orders{}, err
 	}
 

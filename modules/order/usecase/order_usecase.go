@@ -1,11 +1,13 @@
 package usecase
 
 import (
+	"fmt"
 	"github.com/bondhan/ecommerce/constants/params"
 	"github.com/bondhan/ecommerce/modules/order/model"
 	"github.com/bondhan/ecommerce/modules/order/query"
 	queryproduct "github.com/bondhan/ecommerce/modules/product/query"
 	usecaseproduct "github.com/bondhan/ecommerce/modules/product/usecase"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -26,25 +28,41 @@ func NewOrderUC(logger *logrus.Logger, orderQ query.IOrderQ,
 		productUC: productUC,
 	}
 }
-func (c orderUC) Create(req model.CreateOrderReq) (model.CreateOrderResp, error) {
-	//newOrder, err := c.orderQ.Insert(req)
-	//if err != nil {
-	//	return model.CreateOrderResp{}, err
-	//}
-	//
-	//nOrder := model.CreateOrderResp{
-	//	Order: model.Order{
-	//		OrderID: newOrder.ID,
-	//		Name:    newOrder.TotalPrice,
-	//	},
-	//	PassCode:  newOrder.TotalPaid,
-	//	CreatedAt: newOrder.CreatedAt.UTC().Format(time.RFC3339),
-	//	UpdatedAt: newOrder.UpdatedAt.UTC().Format(time.RFC3339),
-	//}
-	//
-	//return nOrder, nil
+func (c orderUC) Create(req model.OrderReq) (model.OrderTotalResp, error) {
 
-	return model.CreateOrderResp{}, nil
+	data, err := c.SubTotal(req.Products)
+	if err != nil {
+		return model.OrderTotalResp{}, err
+	}
+
+	order := model.OrderTotal{
+		CashiersID:     uint(1), //ToDo: get from jwt
+		PaymentTypesID: req.PaymentID,
+		TotalPrice:     data.Subtotal,
+		TotalPaid:      req.TotalPaid,
+		TotalReturn:    req.TotalPaid - data.Subtotal,
+	}
+
+	res, err := c.orderQ.Insert(order, data.Products)
+	if err != nil {
+		return model.OrderTotalResp{}, err
+	}
+	resp := model.OrderTotalResp{
+		Order: model.OrderTotal{
+			OrderID:        res.ID,
+			CashiersID:     res.CashierID,
+			PaymentTypesID: res.PaymentTypeID,
+			TotalPrice:     res.TotalPrice,
+			TotalPaid:      res.TotalPaid,
+			TotalReturn:    res.TotalReturn,
+			ReceiptID:      fmt.Sprintf("ID%03d", res.ID),
+			UpdatedAt:      res.UpdatedAt.UTC().Format(time.RFC3339),
+			CreatedAt:      res.CreatedAt.UTC().Format(time.RFC3339),
+		},
+		Products: data.Products,
+	}
+
+	return resp, nil
 }
 
 func (c orderUC) SubTotal(req []model.SubTotalReq) (model.SubTotal, error) {

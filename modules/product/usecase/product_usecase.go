@@ -143,6 +143,7 @@ func (c productUC) Detail(id uint) (model.ProductDetail, error) {
 		}
 
 		product.Discount = &model.DiscountDetail{
+			ID:              v.DiscountID,
 			Qty:             v.Qty,
 			Type:            v.Type,
 			Result:          v.Result,
