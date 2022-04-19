@@ -59,8 +59,35 @@ func (c *orderQ) Insert(req model.OrderTotal, data []model.ProductSubTotal) (dom
 		if v.Discount != nil {
 			newOrderDetail.DiscountID = v.Discount.ID
 		}
+		// get product stock
+		product := domain.Products{}
+		err := tx.Where("id = ? and deleted_at is null", v.ProductID).First(&product).Error
+		if err != nil {
+			tx.Rollback()
+			return domain.Orders{}, err
+		}
 
-		err := tx.Create(&newOrderDetail).Error
+		// sub stock
+		remainStock := product.Stock - v.Qty
+		if remainStock <= 0 {
+			tx.Rollback()
+			return domain.Orders{}, ecommerceerror.ErrOutOfStock
+		}
+
+		// update stock
+		res := tx.Where("id = ? and updated_at = ?", product.ID, product.UpdatedAt).Model(&product).
+			Updates(domain.Products{Stock: remainStock})
+		if res.Error != nil {
+			tx.Rollback()
+			return domain.Orders{}, err
+		}
+
+		if res.RowsAffected == 0 {
+			tx.Rollback()
+			return domain.Orders{}, ecommerceerror.ErrStockChange
+		}
+
+		err = tx.Create(&newOrderDetail).Error
 		if err != nil {
 			tx.Rollback()
 			return domain.Orders{}, err

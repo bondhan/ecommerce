@@ -53,7 +53,9 @@ func Respond(w http.ResponseWriter, code int, src interface{}) {
 			return
 		}
 	}
-	w.WriteHeader(code)
+	if code != http.StatusOK {
+		w.WriteHeader(code)
+	}
 	w.Write(body)
 }
 
@@ -86,7 +88,9 @@ func Success(w http.ResponseWriter, code int) {
 		Error(w, http.StatusInternalServerError, fmt.Errorf("failed to parse Json: %s", err.Error()))
 		return
 	}
-	w.WriteHeader(code)
+	if code != http.StatusOK {
+		w.WriteHeader(code)
+	}
 	w.Write(body)
 }
 
@@ -104,6 +108,8 @@ func SuccessJSON(w http.ResponseWriter, code int, src interface{}) {
 		Error(w, http.StatusInternalServerError, fmt.Errorf("failed to parse Json: %s", err.Error()))
 		return
 	}
-	w.WriteHeader(code)
+	if code != http.StatusOK {
+		w.WriteHeader(code)
+	}
 	w.Write(body)
 }

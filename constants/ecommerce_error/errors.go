@@ -9,4 +9,6 @@ var (
 	ErrProductNotFound   = errors.New("Product Not Found")
 	ErrOrderNotFound     = errors.New("Order Not Found")
 	ErrInvalidParameters = errors.New("Invalid Parameters")
+	ErrOutOfStock        = errors.New("Out of Stock")
+	ErrStockChange       = errors.New("Stock has changed")
 )
