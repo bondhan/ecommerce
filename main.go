@@ -17,10 +17,11 @@ func main() {
 	logger := driver.NewLogInstance(isProd, m)
 
 	// instantiate database
-	dsn := config.NewDsnMYSQLDBConf(os.Getenv("MYSQL_HOST"), os.Getenv("MYSQL_USER"),
-		os.Getenv("MYSQL_PASSWORD"), os.Getenv("MYSQL_DBNAME"))
+	dsn := config.NewDsnMYSQLDBConf(os.Getenv("MYSQL_HOST"), os.Getenv("MYSQL_PORT"),
+		os.Getenv("MYSQL_USER"), os.Getenv("MYSQL_PASSWORD"), os.Getenv("MYSQL_DBNAME"))
 	poolType := config.NewConnPoolConf(logger, os.Getenv("DB_MAX_OPEN_CONN"), os.Getenv("DB_MAX_IDLE_CONN"),
 		os.Getenv("DB_MAX_LIFE_TIME_CONN_MINUTE"))
+	logger.Debugf(dsn)
 	gormDBConn, sqlDBConn := driver.NewDBInstance(logger, dsn, poolType)
 
 	defer func(l *logrus.Logger, sqlDb *sql.DB) {

@@ -16,7 +16,7 @@ type migrateLog struct {
 }
 
 func (l *migrateLog) Printf(format string, v ...interface{}) {
-	l.logger.Printf(format, v)
+	l.logger.Printf(format, v...)
 }
 
 func (l *migrateLog) Verbose() bool {

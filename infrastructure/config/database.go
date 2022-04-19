@@ -12,10 +12,10 @@ type ConnPoolType struct {
 	MaxLifeTime int64
 }
 
-func NewDsnMYSQLDBConf(dbHost, dbUser, dbPassword, dbName string) string {
+func NewDsnMYSQLDBConf(dbHost, dbPort, dbUser, dbPassword, dbName string) string {
 
-	dsnDB := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4", dbUser,
-		dbPassword, dbHost, dbName)
+	dsnDB := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4", dbUser,
+		dbPassword, dbHost, dbPort, dbName)
 
 	return dsnDB
 }
