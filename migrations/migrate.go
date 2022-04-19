@@ -44,16 +44,6 @@ func MigrateMysqlUp(logger *logrus.Logger, db *sql.DB) error {
 		return err
 	}
 
-	defer func(mm *migrate.Migrate) {
-		errSrc, errDB := mm.Close()
-		if errSrc != nil {
-			logger.Errorf("error closing migrate err source: %s", errSrc)
-		}
-		if errDB != nil {
-			logger.Errorf("error closing migrate err DB: %s", errDB)
-		}
-	}(m)
-
 	err = m.Up()
 	if err != nil {
 		if err.Error() == "no change" {

@@ -11,10 +11,10 @@ func NewRouter(hnd *Handler) *chi.Mux {
 
 	r.Route("/cashiers", func(rc chi.Router) {
 		rc.Post("/", hnd.cashier.Create)
-		rc.Get("/", hnd.cashier.List)
-		rc.Get("/{id}", hnd.cashier.Detail)
 		rc.Put("/{id}", hnd.cashier.Update)
 		rc.Delete("/{id}", hnd.cashier.Delete)
+		rc.Get("/", hnd.cashier.List)
+		rc.Get("/{id}", hnd.cashier.Detail)
 	})
 
 	return r

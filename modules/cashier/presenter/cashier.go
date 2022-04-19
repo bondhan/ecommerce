@@ -24,9 +24,73 @@ func (c *cashierP) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	JSON(w, http.StatusOK, req)
+	resp, err := c.CashierUC.Create(req)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	SuccessJSON(w, http.StatusOK, resp)
 }
-func (c *cashierP) List(w http.ResponseWriter, r *http.Request)   {}
-func (c *cashierP) Detail(w http.ResponseWriter, r *http.Request) {}
-func (c *cashierP) Update(w http.ResponseWriter, r *http.Request) {}
-func (c *cashierP) Delete(w http.ResponseWriter, r *http.Request) {}
+
+func (c *cashierP) Update(w http.ResponseWriter, r *http.Request) {
+	req, err := model.UpdateCashier(r)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	err = c.CashierUC.Update(req)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	Success(w, http.StatusOK)
+}
+
+func (c *cashierP) Delete(w http.ResponseWriter, r *http.Request) {
+	id, err := model.GetCashierID(r)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	err = c.CashierUC.Delete(id)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	Success(w, http.StatusOK)
+}
+func (c *cashierP) List(w http.ResponseWriter, r *http.Request) {
+	page, err := model.NewCashierPaginatedReq(r)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+	res, err := c.CashierUC.List(page)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+	SuccessJSON(w, http.StatusOK, res)
+
+}
+
+func (c *cashierP) Detail(w http.ResponseWriter, r *http.Request) {
+	id, err := model.GetCashierID(r)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	res, err := c.CashierUC.Detail(id)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	SuccessJSON(w, http.StatusOK, res)
+}

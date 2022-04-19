@@ -14,7 +14,7 @@ type ConnPoolType struct {
 
 func NewDsnMYSQLDBConf(dbHost, dbPort, dbUser, dbPassword, dbName string) string {
 
-	dsnDB := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4", dbUser,
+	dsnDB := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=true", dbUser,
 		dbPassword, dbHost, dbPort, dbName)
 
 	return dsnDB

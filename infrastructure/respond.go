@@ -5,25 +5,24 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-
-	"github.com/sirupsen/logrus"
 )
 
 // ErrorResponse is Error response template
 type ErrorResponse struct {
-	Status string `json:"status"`
-	Reason string `json:"reason"`
-	Code   int    `json:"code"`
+	Status  bool   `json:"status"`
+	Message string `json:"message"`
+	Code    int    `json:"-"`
 }
 
 type Response struct {
-	Status string `json:"status"`
-	Code   int    `json:"code"`
+	Status  bool        `json:"status"`
+	Message string      `json:"message"`
+	Code    int         `json:"-"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
 func (e *ErrorResponse) String() string {
-	return fmt.Sprintf("reason: %s", e.Reason)
-
+	return fmt.Sprintf("reason: %s", e.Message)
 }
 
 // Respond is response write to ResponseWriter
@@ -61,13 +60,10 @@ func Respond(w http.ResponseWriter, code int, src interface{}) {
 // Error is wrapped Respond when error response
 func Error(w http.ResponseWriter, code int, err error) {
 	e := &ErrorResponse{
-		Status: "Unsuccessful",
-		Reason: err.Error(),
-		Code:   code,
+		Status:  false,
+		Message: err.Error(),
+		Code:    code,
 	}
-	logrus.Debugf("%v\n", e)
-	fmt.Printf("%+v\n", e)
-	fmt.Printf("%+v\n", err)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	Respond(w, code, e)
 }
@@ -77,16 +73,35 @@ func JSON(w http.ResponseWriter, code int, src interface{}) {
 	Respond(w, code, src)
 }
 
-func Success(w http.ResponseWriter, code int, msg string) {
+func Success(w http.ResponseWriter, code int) {
 	status := Response{
-		Status: "Successful",
-		Code:   code,
+		Status:  true,
+		Message: "Success",
+		Code:    code,
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	body, err := json.Marshal(status)
 	if err != nil {
-		Error(w, http.StatusInternalServerError, fmt.Errorf("Failed to parse Json: %s", err.Error()))
+		Error(w, http.StatusInternalServerError, fmt.Errorf("failed to parse Json: %s", err.Error()))
+		return
+	}
+	w.WriteHeader(code)
+	w.Write(body)
+}
+
+func SuccessJSON(w http.ResponseWriter, code int, src interface{}) {
+	status := Response{
+		Status:  true,
+		Message: "Success",
+		Code:    code,
+		Data:    src,
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	body, err := json.Marshal(status)
+	if err != nil {
+		Error(w, http.StatusInternalServerError, fmt.Errorf("failed to parse Json: %s", err.Error()))
 		return
 	}
 	w.WriteHeader(code)

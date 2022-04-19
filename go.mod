@@ -10,6 +10,7 @@ require (
 	github.com/lib/pq v1.10.5
 	github.com/mattn/go-colorable v0.1.6
 	github.com/sirupsen/logrus v1.8.1
+	github.com/spf13/cast v1.3.0
 	gorm.io/driver/mysql v1.3.3
 	gorm.io/gorm v1.23.4
 )
