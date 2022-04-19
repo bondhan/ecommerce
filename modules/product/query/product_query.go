@@ -249,7 +249,8 @@ func (c *productQ) Detail(id uint) (model.ProductRes, error) {
 			p.discount_id,
 			d.type,
 			d.qty,
-			d.result 
+			d.result,
+			d.expired_at
 		from
 			products p
 		left join discounts d on
