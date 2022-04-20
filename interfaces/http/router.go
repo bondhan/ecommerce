@@ -5,7 +5,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 )
 
-func NewRouter(hnd *Handler) *chi.Mux {
+func NewRouter(hnd *Handler, jwtKey string) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
 
@@ -15,6 +15,9 @@ func NewRouter(hnd *Handler) *chi.Mux {
 		rc.Delete("/{id}", hnd.cashier.Delete)
 		rc.Get("/", hnd.cashier.List)
 		rc.Get("/{id}", hnd.cashier.Detail)
+		rc.Get("/{id}/passcode", hnd.cashier.PassCode)
+		rc.Post("/{id}/login", hnd.cashier.Login)
+		rc.Post("/{id}/logout", hnd.cashier.Logout)
 	})
 
 	r.Route("/categories", func(rc chi.Router) {
@@ -42,8 +45,8 @@ func NewRouter(hnd *Handler) *chi.Mux {
 	})
 
 	r.Route("/orders", func(rc chi.Router) {
-		rc.Post("/subtotal", hnd.order.SubTotal)
-		rc.Post("/", hnd.order.Create)
+		rc.Post("/subtotal", JWTValidator(jwtKey, hnd.order.SubTotal))
+		rc.Post("/", JWTValidator(jwtKey, hnd.order.Create))
 		rc.Get("/", hnd.order.List)
 	})
 

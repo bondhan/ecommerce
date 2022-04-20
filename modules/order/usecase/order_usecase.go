@@ -39,7 +39,7 @@ func (c orderUC) Create(req model.OrderReq) (model.OrderTotalResp, error) {
 	}
 
 	order := model.OrderTotal{
-		CashiersID:     uint(1), //ToDo: get from jwt
+		CashiersID:     req.CashierID,
 		PaymentTypesID: req.PaymentID,
 		TotalPrice:     data.Subtotal,
 		TotalPaid:      req.TotalPaid,

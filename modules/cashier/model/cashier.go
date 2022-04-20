@@ -30,6 +30,13 @@ type Cashier struct {
 	Name      string `json:"name"`
 }
 
+type Passcode struct {
+	Passcode string `json:"passcode"`
+}
+
+type Token struct {
+	Token string `json:"token"`
+}
 type CreateCashierUpdate struct {
 	ID uint
 	CreateCashierReq
@@ -45,6 +52,32 @@ func (c CreateCashierReq) Validate() error {
 
 func NewCashier(r *http.Request) (CreateCashierReq, error) {
 	var req CreateCashierReq
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&req); err != nil {
+		return req, err
+	}
+
+	err := req.Validate()
+	if err != nil {
+		return req, err
+	}
+
+	return req, nil
+}
+
+type CreatePasscodeReq struct {
+	PassCode string `json:"passcode"`
+}
+
+func (c CreatePasscodeReq) Validate() error {
+	return validation.ValidateStruct(&c,
+		validation.Field(&c.PassCode, validation.Required, is.Digit,
+			validation.Length(6, 6)),
+	)
+}
+
+func NewPasscode(r *http.Request) (CreatePasscodeReq, error) {
+	var req CreatePasscodeReq
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&req); err != nil {
 		return req, err

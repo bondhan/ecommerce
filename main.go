@@ -37,8 +37,8 @@ func main() {
 		return
 	}
 
-	service := handler.NewHandler(logger, gormDBConn)
-	router := handler.NewRouter(service)
+	service := handler.NewHandler(logger, os.Getenv("JWT_KEY"), gormDBConn)
+	router := handler.NewRouter(service, os.Getenv("JWT_KEY"))
 
 	driver.RunHttpServer(logger, os.Getenv("PORT"), router)
 }

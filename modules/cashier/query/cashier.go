@@ -11,4 +11,5 @@ type ICashierQ interface {
 	Delete(id uint) error
 	List(req model.CashierPaginated) ([]domain.Cashiers, int64, error)
 	Detail(id uint) (domain.Cashiers, error)
+	UpdateLogin(id uint, loginStatus string) error
 }

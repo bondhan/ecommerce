@@ -11,4 +11,6 @@ var (
 	ErrInvalidParameters = errors.New("Invalid Parameters")
 	ErrOutOfStock        = errors.New("Out of Stock")
 	ErrStockChange       = errors.New("Stock has changed")
+	ErrPasscodeNotMatch  = errors.New("Passcode Not Match")
+	ErrUnauthorized      = errors.New("Unauthorized")
 )

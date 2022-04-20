@@ -33,9 +33,9 @@ type Handler struct {
 	order    presenterorder.IOrderP
 }
 
-func NewHandler(logger *logrus.Logger, db *gorm.DB) *Handler {
+func NewHandler(logger *logrus.Logger, jwtKey string, db *gorm.DB) *Handler {
 	cashierQ := querycashier.NewCashierQ(logger, db)
-	cashierUC := usecasecashier.NewCashierUC(logger, cashierQ)
+	cashierUC := usecasecashier.NewCashierUC(logger, jwtKey, cashierQ)
 	cashierP := presentercashier.NewCashierP(cashierUC)
 
 	categoryQ := querycategory.NewCategoryQ(logger, db)

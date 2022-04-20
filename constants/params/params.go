@@ -8,4 +8,6 @@ const (
 
 	BuyN       = "BUY_N"
 	Percentage = "PERCENT"
+
+	JWTClaims = "CashierID"
 )

@@ -63,6 +63,31 @@ func (c *cashierQ) Update(req model.CreateCashierUpdate) error {
 	return nil
 }
 
+func (c *cashierQ) UpdateLogin(id uint, loginStatus string) error {
+	var oldCashier domain.Cashiers
+	err := c.gormDB.Where("id = ?", id).First(&oldCashier).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ecommerceerror.ErrCashierNotFound
+		}
+		return err
+	}
+
+	res := c.gormDB.Where("id = ? and updated_at = ?", oldCashier.ID, oldCashier.UpdatedAt).Model(&oldCashier).
+		Updates(domain.Cashiers{LoginStatus: loginStatus})
+	if err != nil {
+		return err
+	}
+
+	if res.Error != nil {
+		return res.Error
+	}
+	if res.RowsAffected == 0 {
+		return ecommerceerror.ErrCashierNotFound
+	}
+
+	return nil
+}
 func (c *cashierQ) Delete(id uint) error {
 	var cashier domain.Cashiers
 

@@ -8,4 +8,7 @@ type ICashierUC interface {
 	Delete(id uint) error
 	List(req model.CashierPaginated) (model.ListResponse, error)
 	Detail(id uint) (model.Cashier, error)
+	PassCode(id uint) (model.Passcode, error)
+	Login(id uint, passcode model.CreatePasscodeReq) (model.Token, error)
+	Logout(id uint, passcode model.CreatePasscodeReq) error
 }

@@ -65,6 +65,7 @@ func (c *productP) Delete(w http.ResponseWriter, r *http.Request) {
 	Success(w, http.StatusOK)
 }
 func (c *productP) List(w http.ResponseWriter, r *http.Request) {
+
 	page, err := model.NewProductPaginatedReq(r)
 	if err != nil {
 		Error(w, http.StatusBadRequest, err)

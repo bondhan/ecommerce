@@ -189,6 +189,7 @@ type SubTotal struct {
 }
 
 type OrderReq struct {
+	CashierID uint          `json:"cashierId"'`
 	PaymentID uint          `json:"paymentId"'`
 	TotalPaid int64         `json:"totalPaid"'`
 	Products  []SubTotalReq `json:"products"'`
@@ -208,7 +209,17 @@ func NewSOrder(r *http.Request) (OrderReq, error) {
 		}
 	}
 
+	claims, ok := r.Context().Value(params.JWTClaims).(*basemodel.Claims)
+	if !ok {
+		return req, ecommerceerror.ErrUnauthorized
+	}
+	ID, err := strconv.Atoi(claims.Subject)
+	if err != nil {
+		return req, err
+	}
+	req.CashierID = uint(ID)
 	return req, nil
+
 }
 
 type OrderTotal struct {
