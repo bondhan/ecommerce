@@ -14,4 +14,5 @@ var (
 	ErrPasscodeNotMatch  = errors.New("Passcode Not Match")
 	ErrUnauthorized      = errors.New("Unauthorized")
 	ErrEmptyBody         = errors.New("EmptyBody")
+	ErrEmptyProduct      = errors.New("EmptyProduct")
 )

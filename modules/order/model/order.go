@@ -206,6 +206,10 @@ func NewSOrder(r *http.Request) (OrderReq, error) {
 		return req, err
 	}
 
+	if len(req.Products) < 1 {
+		return OrderReq{}, ecommerceerror.ErrEmptyProduct
+	}
+
 	for _, v := range req.Products {
 		err := v.Validate()
 		if err != nil {

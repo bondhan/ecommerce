@@ -35,3 +35,8 @@ interactive:
 ```bash
 docker run --rm -ti -e "MYSQL_HOST=host.docker.internal" -e "MYSQL_PORT=3306" -e "MYSQL_USER=root" -e "MYSQL_DBNAME=ecommerce" -p 8080:3030 ecommerce:v1 /bin/bash
 ```
+
+push:
+```bash
+docker_clean_images ; docker_clean_ps ; docker build --platform linux/amd64  --no-cache -t bono02/ecommerce:v1-linux -f ./Dockerfile .  &&  docker push bono02/ecommerce:v1-linux
+```

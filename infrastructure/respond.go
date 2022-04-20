@@ -91,13 +91,33 @@ func Error(w http.ResponseWriter, code int, err error) {
 			}
 		]`
 		mm := make([]map[string]interface{}, 1)
-		err := json.Unmarshal([]byte(str), &mm)
+		err = json.Unmarshal([]byte(str), &mm)
 		if err != nil {
 			Error(w, http.StatusInternalServerError, fmt.Errorf("failed to parse Json: %s", err.Error()))
 			return
 		}
 		e.Error = mm
 		e.Message = `body ValidationError: "value" must be an array`
+	case ecommerceerror.ErrEmptyProduct:
+		str := `[{
+            "message": "\"products\" is required",
+            "path": [
+                "products"
+            ],
+            "type": "any.required",
+            "context": {
+                "label": "products",
+                "key": "products"
+            }
+        }]`
+		mm := make([]map[string]interface{}, 1)
+		err = json.Unmarshal([]byte(str), &mm)
+		if err != nil {
+			Error(w, http.StatusInternalServerError, fmt.Errorf("failed to parse Json: %s", err.Error()))
+			return
+		}
+		e.Error = mm
+		e.Message = `body ValidationError:"products" is required`
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
