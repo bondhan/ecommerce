@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"net/http"
 )
 
 func NewRouter(hnd *Handler, jwtKey string) *chi.Mux {
@@ -24,31 +25,37 @@ func NewRouter(hnd *Handler, jwtKey string) *chi.Mux {
 		rc.Post("/", hnd.category.Create)
 		rc.Put("/{id}", hnd.category.Update)
 		rc.Delete("/{id}", hnd.category.Delete)
-		rc.Get("/", hnd.category.List)
-		rc.Get("/{id}", hnd.category.Detail)
+		rc.Get("/", JWTValidator(jwtKey, hnd.category.List))
+		rc.Get("/{id}", JWTValidator(jwtKey, hnd.category.Detail))
 	})
 
 	r.Route("/payments", func(rc chi.Router) {
 		rc.Post("/", hnd.payment.Create)
 		rc.Put("/{id}", hnd.payment.Update)
 		rc.Delete("/{id}", hnd.payment.Delete)
-		rc.Get("/", hnd.payment.List)
-		rc.Get("/{id}", hnd.payment.Detail)
+		rc.Get("/", JWTValidator(jwtKey, hnd.payment.List))
+		rc.Get("/{id}", JWTValidator(jwtKey, hnd.payment.Detail))
 	})
 
 	r.Route("/products", func(rc chi.Router) {
 		rc.Post("/", hnd.product.Create)
 		rc.Put("/{id}", hnd.product.Update)
 		rc.Delete("/{id}", hnd.product.Delete)
-		rc.Get("/", hnd.product.List)
-		rc.Get("/{id}", hnd.product.Detail)
+		rc.Get("/", JWTValidator(jwtKey, hnd.product.List))
+		rc.Get("/{id}", JWTValidator(jwtKey, hnd.product.Detail))
 	})
 
 	r.Route("/orders", func(rc chi.Router) {
 		rc.Post("/subtotal", JWTValidator(jwtKey, hnd.order.SubTotal))
 		rc.Post("/", JWTValidator(jwtKey, hnd.order.Create))
 		rc.Get("/", hnd.order.List)
+		rc.Get("/{id}", JWTValidator(jwtKey, hnd.order.Detail))
+		rc.Get("/{id}/download", JWTValidator(jwtKey, hnd.order.Download))
+		rc.Get("/{id}/check-download", JWTValidator(jwtKey, hnd.order.DownloadStatus))
 	})
+
+	r.Get("/revenues", JWTValidator(jwtKey, http.NotFound))
+	r.Get("/solds", JWTValidator(jwtKey, http.NotFound))
 
 	return r
 }
