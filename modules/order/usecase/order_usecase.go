@@ -99,9 +99,9 @@ func (c orderUC) SubTotal(req []model.SubTotalReq) (model.SubTotal, error) {
 			if prod.Discount.Type == params.BuyN {
 				multiplier := v.Qty / prod.Discount.Qty
 				remains := v.Qty % prod.Discount.Qty
-				prd.TotalFinalPrice = multiplier*prod.Discount.Result + remains*prod.Price
+				prd.TotalFinalPrice = int64(math.Round(float64(multiplier*prod.Discount.Result + remains*prod.Price)))
 			} else if prod.Discount.Type == params.Percentage {
-				prd.TotalFinalPrice = v.Qty * (prod.Price - int64(math.Ceil(float64(prod.Price*prod.Discount.Result/100))))
+				prd.TotalFinalPrice = int64(math.Round(float64(v.Qty * (prod.Price - prod.Price*prod.Discount.Result/100))))
 			}
 		}
 

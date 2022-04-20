@@ -11,8 +11,8 @@ import (
 func NewRouter(logger *logrus.Logger, hnd *Handler, jwtKey string) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
-	r.Use(middleware.Logger)
-	r.Use(requestlogmsv2.CustomLoggerV2(logger, nil))
+	//r.Use(middleware.Logger)
+	//r.Use(requestlogmsv2.CustomLoggerV2(logger, nil))
 
 	r.Route("/cashiers", func(rc chi.Router) {
 		rc.Post("/", hnd.cashier.Create)
@@ -50,6 +50,7 @@ func NewRouter(logger *logrus.Logger, hnd *Handler, jwtKey string) *chi.Mux {
 	})
 
 	r.Route("/orders", func(rc chi.Router) {
+		rc.Use(requestlogmsv2.CustomLoggerV2(logger, nil))
 		rc.Post("/subtotal", JWTValidator(jwtKey, hnd.order.SubTotal))
 		rc.Post("/", JWTValidator(jwtKey, hnd.order.Create))
 		rc.Get("/", hnd.order.List)
