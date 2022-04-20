@@ -97,6 +97,7 @@ func (c productUC) List(req model.ProductPaginated) (model.ListResponse, error) 
 			}
 
 			vv.Discount = &model.DiscountDetail{
+				ID:              v.DiscountID,
 				Qty:             v.Qty,
 				Type:            v.Type,
 				Result:          v.Result,
