@@ -34,6 +34,7 @@ func main() {
 	}(logger, sqlDBConn)
 
 	if err := migrations.MigrateMysqlUp(logger, sqlDBConn); err != nil {
+		logger.Errorf("migrate err: %s", err)
 		return
 	}
 
