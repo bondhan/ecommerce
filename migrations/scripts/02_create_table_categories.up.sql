@@ -1,7 +1,7 @@
 CREATE TABLE `categories`
 (
     `id`         bigint       NOT NULL AUTO_INCREMENT,
-    `name`       varchar(256) NOT NULL UNIQUE,
+    `name`       varchar(256) NOT NULL,
     `created_at` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `deleted_at` timestamp NULL,
