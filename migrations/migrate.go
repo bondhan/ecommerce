@@ -2,6 +2,7 @@ package migrations
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -55,4 +56,26 @@ func MigrateMysqlUp(logger *logrus.Logger, db *sql.DB) error {
 	}
 
 	return nil
+}
+
+func CreateDB(logger *logrus.Logger, host, port, user, password, dbname string) {
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/", user, password, host, port)
+
+	db, err := sql.Open(Mysql, dsn)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	defer db.Close()
+
+	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + dbname)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	_, err = db.Exec("USE " + dbname)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
 }

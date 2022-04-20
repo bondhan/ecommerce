@@ -26,6 +26,11 @@ mac:
  docker run -e "MYSQL_HOST=host.docker.internal" -e "MYSQL_PORT=3306" -e "MYSQL_USER=root" -e "MYSQL_DBNAME=ecommerce" -p 8080:3030 ecommerce:v1
 ```
 
+linux:
+```bash
+docker build --platform linux/amd64  --no-cache -t bono02/ecommerce:v1-linux -f ./Dockerfile .
+```
+
 interactive:
 ```bash
 docker run --rm -ti -e "MYSQL_HOST=host.docker.internal" -e "MYSQL_PORT=3306" -e "MYSQL_USER=root" -e "MYSQL_DBNAME=ecommerce" -p 8080:3030 ecommerce:v1 /bin/bash

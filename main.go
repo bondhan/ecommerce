@@ -16,6 +16,9 @@ func main() {
 	isProd, m := config.NewLogConf(os.Getenv("ENV"), os.Getenv("APP_NAME"))
 	logger := driver.NewLogInstance(isProd, m)
 
+	migrations.CreateDB(logger, os.Getenv("MYSQL_HOST"), os.Getenv("MYSQL_PORT"),
+		os.Getenv("MYSQL_USER"), os.Getenv("MYSQL_PASSWORD"), os.Getenv("MYSQL_DBNAME"))
+
 	// instantiate database
 	dsn := config.NewDsnMYSQLDBConf(os.Getenv("MYSQL_HOST"), os.Getenv("MYSQL_PORT"),
 		os.Getenv("MYSQL_USER"), os.Getenv("MYSQL_PASSWORD"), os.Getenv("MYSQL_DBNAME"))
