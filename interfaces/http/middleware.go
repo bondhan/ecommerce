@@ -16,7 +16,7 @@ func JWTValidator(jwtKey string, next http.HandlerFunc) http.HandlerFunc {
 
 		claims := &basemodel.Claims{}
 		reqToken := r.Header.Get("Authorization")
-		splitToken := strings.Split(reqToken, "Bearer ")
+		splitToken := strings.Split(reqToken, " ")
 		reqToken = splitToken[1]
 
 		tkn, err := jwt.ParseWithClaims(reqToken, claims, func(token *jwt.Token) (interface{}, error) {
