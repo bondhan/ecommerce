@@ -125,6 +125,7 @@ func CustomLoggerV2(logger *logrus.Logger, dbConn *gorm.DB) func(next http.Handl
 				data["query"] = null.StringFrom(r.URL.RawQuery)
 				data["body"] = body
 				data["response"] = respBody
+				data["status"] = null.IntFrom(int64(ww.Status()))
 
 				logFields["data"] = data
 

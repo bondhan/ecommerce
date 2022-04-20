@@ -63,23 +63,23 @@ func (l *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (stri
 // NewDBInstance ...
 func NewDBInstance(logger *logrus.Logger, confDsnMaster string, poolType config.ConnPoolType) (*gorm.DB, *sql.DB) {
 
-	lvl := logger.GetLevel()
-	var level log.LogLevel
-	switch lvl {
-	case logrus.ErrorLevel:
-		level = log.Error
-	case logrus.WarnLevel:
-		level = log.Warn
-	case logrus.InfoLevel:
-		level = log.Info
-	default:
-		level = log.Info
-	}
+	//lvl := logger.GetLevel()
+	//var level log.LogLevel
+	//switch lvl {
+	//case logrus.ErrorLevel:
+	//	level = log.Error
+	//case logrus.WarnLevel:
+	//	level = log.Warn
+	//case logrus.InfoLevel:
+	//	level = log.Info
+	//default:
+	//	level = log.Info
+	//}
 
-	l := &GormLogger{Logger: logger}
+	//l := &GormLogger{Logger: logger}
 
 	db, err := gorm.Open(mysql.Open(confDsnMaster), &gorm.Config{
-		Logger: l.LogMode(level),
+		//Logger: l.LogMode(level),
 	})
 	if err != nil {
 		logger.Fatalf("fail open database err:%s", err)
