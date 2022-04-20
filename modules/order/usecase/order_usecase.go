@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"fmt"
+	ecommerceerror "github.com/bondhan/ecommerce/constants/ecommerce_error"
 	"github.com/bondhan/ecommerce/constants/params"
 	basemodel "github.com/bondhan/ecommerce/domain/base_model"
 	modelcashier "github.com/bondhan/ecommerce/modules/cashier/model"
@@ -10,6 +11,7 @@ import (
 	modelpayment "github.com/bondhan/ecommerce/modules/payment/model"
 	queryproduct "github.com/bondhan/ecommerce/modules/product/query"
 	usecaseproduct "github.com/bondhan/ecommerce/modules/product/usecase"
+	"math"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -77,6 +79,10 @@ func (c orderUC) SubTotal(req []model.SubTotalReq) (model.SubTotal, error) {
 			return model.SubTotal{}, err
 		}
 
+		if prod.Stock <= 0 {
+			return model.SubTotal{}, ecommerceerror.ErrOutOfStock
+		}
+
 		prd := model.ProductSubTotal{
 			ProductID:        prod.ProductID,
 			Name:             prod.Name,
@@ -95,7 +101,7 @@ func (c orderUC) SubTotal(req []model.SubTotalReq) (model.SubTotal, error) {
 				remains := v.Qty % prod.Discount.Qty
 				prd.TotalFinalPrice = multiplier*prod.Discount.Result + remains*prod.Price
 			} else if prod.Discount.Type == params.Percentage {
-				prd.TotalFinalPrice = v.Qty * (prod.Price - prod.Price*prod.Discount.Result/100)
+				prd.TotalFinalPrice = v.Qty * (prod.Price - int64(math.Ceil(float64(prod.Price*prod.Discount.Result/100))))
 			}
 		}
 
