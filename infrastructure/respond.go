@@ -65,16 +65,39 @@ func Respond(w http.ResponseWriter, code int, src interface{}) {
 func Error(w http.ResponseWriter, code int, err error) {
 
 	c := code
-	switch err {
-	case ecommerceerror.ErrCashierNotFound, ecommerceerror.ErrCategoryNotFound,
-		ecommerceerror.ErrPaymentNotFound, ecommerceerror.ErrProductNotFound, ecommerceerror.ErrOrderNotFound:
-		c = http.StatusNotFound
-	}
+
 	e := &ErrorResponse{
 		Success: false,
 		Message: err.Error(),
 		Error:   struct{}{},
-		Code:    c,
+		Code:    code,
+	}
+
+	switch err {
+	case ecommerceerror.ErrCashierNotFound, ecommerceerror.ErrCategoryNotFound,
+		ecommerceerror.ErrPaymentNotFound, ecommerceerror.ErrProductNotFound, ecommerceerror.ErrOrderNotFound:
+		c = http.StatusNotFound
+		e.Code = c
+	case ecommerceerror.ErrEmptyBody:
+		str := `[
+        {
+            "message": "\"value\" must be an array",
+            "path": [],
+            "type": "array.base",
+            "context": {
+                "label": "value",
+                "value": {}
+            }
+			}
+		]`
+		mm := make([]map[string]interface{}, 1)
+		err := json.Unmarshal([]byte(str), &mm)
+		if err != nil {
+			Error(w, http.StatusInternalServerError, fmt.Errorf("failed to parse Json: %s", err.Error()))
+			return
+		}
+		e.Error = mm
+		e.Message = `body ValidationError: "value" must be an array`
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")

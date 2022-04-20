@@ -161,6 +161,10 @@ func NewSubtotalOrder(r *http.Request) ([]SubTotalReq, error) {
 		return req, err
 	}
 
+	if len(req) < 1 {
+		return req, ecommerceerror.ErrEmptyBody
+	}
+
 	for _, v := range req {
 		err := v.Validate()
 		if err != nil {
