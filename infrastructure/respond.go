@@ -10,7 +10,7 @@ import (
 
 // ErrorResponse is Error response template
 type ErrorResponse struct {
-	Status  bool        `json:"status"`
+	Success bool        `json:"success"`
 	Message string      `json:"message"`
 	Error   interface{} `json:"error"`
 	Code    int         `json:"-"`
@@ -71,7 +71,7 @@ func Error(w http.ResponseWriter, code int, err error) {
 		c = http.StatusNotFound
 	}
 	e := &ErrorResponse{
-		Status:  false,
+		Success: false,
 		Message: err.Error(),
 		Error:   struct{}{},
 		Code:    c,
