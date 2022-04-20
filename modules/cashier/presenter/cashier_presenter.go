@@ -22,6 +22,10 @@ func NewCashierP(cashierUC usecase.ICashierUC) ICashierP {
 func (c *cashierP) Create(w http.ResponseWriter, r *http.Request) {
 	req, err := model.NewCashier(r)
 	if err != nil {
+		if errors.Is(err, ecommerceerror.ErrEmptyBody) {
+			Error(w, http.StatusBadRequest, err)
+			return
+		}
 		Error(w, http.StatusBadRequest, err)
 		return
 	}

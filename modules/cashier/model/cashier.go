@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cast"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type CreateCashierResp struct {
@@ -54,6 +55,9 @@ func NewCashier(r *http.Request) (CreateCashierReq, error) {
 	var req CreateCashierReq
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&req); err != nil {
+		if strings.Contains(err.Error(), "EOF") {
+			return req, ecommerceerror.ErrEmptyBody
+		}
 		return req, err
 	}
 

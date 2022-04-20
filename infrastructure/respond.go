@@ -4,18 +4,20 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	ecommerceerror "github.com/bondhan/ecommerce/constants/ecommerce_error"
 	"net/http"
 )
 
 // ErrorResponse is Error response template
 type ErrorResponse struct {
-	Status  bool   `json:"status"`
-	Message string `json:"message"`
-	Code    int    `json:"-"`
+	Status  bool        `json:"status"`
+	Message string      `json:"message"`
+	Error   interface{} `json:"error"`
+	Code    int         `json:"-"`
 }
 
 type Response struct {
-	Status  bool        `json:"status"`
+	Success bool        `json:"success"`
 	Message string      `json:"message"`
 	Code    int         `json:"-"`
 	Data    interface{} `json:"data,omitempty"`
@@ -61,13 +63,22 @@ func Respond(w http.ResponseWriter, code int, src interface{}) {
 
 // Error is wrapped Respond when error response
 func Error(w http.ResponseWriter, code int, err error) {
+
+	c := code
+	switch err {
+	case ecommerceerror.ErrCashierNotFound, ecommerceerror.ErrCategoryNotFound,
+		ecommerceerror.ErrPaymentNotFound, ecommerceerror.ErrProductNotFound, ecommerceerror.ErrOrderNotFound:
+		c = http.StatusNotFound
+	}
 	e := &ErrorResponse{
 		Status:  false,
 		Message: err.Error(),
-		Code:    code,
+		Error:   struct{}{},
+		Code:    c,
 	}
+
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	Respond(w, code, e)
+	Respond(w, c, e)
 }
 
 func JSON(w http.ResponseWriter, code int, src interface{}) {
@@ -77,7 +88,7 @@ func JSON(w http.ResponseWriter, code int, src interface{}) {
 
 func Success(w http.ResponseWriter, code int) {
 	status := Response{
-		Status:  true,
+		Success: true,
 		Message: "Success",
 		Code:    code,
 	}
@@ -96,7 +107,7 @@ func Success(w http.ResponseWriter, code int) {
 
 func SuccessJSON(w http.ResponseWriter, code int, src interface{}) {
 	status := Response{
-		Status:  true,
+		Success: true,
 		Message: "Success",
 		Code:    code,
 		Data:    src,

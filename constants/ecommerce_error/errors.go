@@ -13,4 +13,5 @@ var (
 	ErrStockChange       = errors.New("Stock has changed")
 	ErrPasscodeNotMatch  = errors.New("Passcode Not Match")
 	ErrUnauthorized      = errors.New("Unauthorized")
+	ErrEmptyBody         = errors.New("EmptyBody")
 )

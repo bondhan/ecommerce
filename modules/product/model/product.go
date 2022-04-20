@@ -23,7 +23,7 @@ type CreateProductResp struct {
 	SKU        string `json:"sku"`
 	Price      int64  `json:"price"`
 	Stock      int64  `json:"stock"`
-	CategoryID uint   `json:"categoryId"`
+	CategoryID uint   `json:"categoriesId"`
 	CreatedAt  string `json:"createdAt"`
 	UpdatedAt  string `json:"updatedAt"`
 }

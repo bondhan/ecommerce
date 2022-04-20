@@ -16,6 +16,10 @@ func JWTValidator(jwtKey string, next http.HandlerFunc) http.HandlerFunc {
 
 		claims := &basemodel.Claims{}
 		reqToken := r.Header.Get("Authorization")
+		if reqToken == "" {
+			Error(w, http.StatusUnauthorized, ecommerceerror.ErrUnauthorized)
+			return
+		}
 		splitToken := strings.Split(reqToken, " ")
 		reqToken = splitToken[1]
 

@@ -32,7 +32,7 @@ func NewLogInstance(isProd bool, fields map[string]interface{}) *logrus.Logger {
 
 	//if it is production will output warn and error level
 	if isProd {
-		level = logrus.WarnLevel
+		level = logrus.TraceLevel
 	} else {
 		level = logrus.TraceLevel
 	}
