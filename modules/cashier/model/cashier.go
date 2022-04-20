@@ -172,6 +172,6 @@ type CashierPaginated struct {
 }
 
 type ListResponse struct {
-	Cashiers []Cashier      `json:"cashiers"'`
-	Meta     basemodel.Meta `json:"meta"'`
+	Cashiers []Cashier      `json:"cashiers"`
+	Meta     basemodel.Meta `json:"meta"`
 }

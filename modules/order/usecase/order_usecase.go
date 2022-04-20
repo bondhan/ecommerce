@@ -11,7 +11,6 @@ import (
 	modelpayment "github.com/bondhan/ecommerce/modules/payment/model"
 	queryproduct "github.com/bondhan/ecommerce/modules/product/query"
 	usecaseproduct "github.com/bondhan/ecommerce/modules/product/usecase"
-	"math"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -71,7 +70,7 @@ func (c orderUC) Create(req model.OrderReq) (model.OrderTotalResp, error) {
 }
 
 func (c orderUC) SubTotal(req []model.SubTotalReq) (model.SubTotal, error) {
-	var total int64
+	var total float64
 	pst := []model.ProductSubTotal{}
 	for _, v := range req {
 		prod, err := c.productUC.Detail(v.ProductID)
@@ -91,17 +90,19 @@ func (c orderUC) SubTotal(req []model.SubTotalReq) (model.SubTotal, error) {
 			Image:            prod.Image,
 			Discount:         prod.Discount,
 			Qty:              v.Qty,
-			TotalNormalPrice: v.Qty * prod.Price,
-			TotalFinalPrice:  v.Qty * prod.Price,
+			TotalNormalPrice: float64(v.Qty * prod.Price),
+			TotalFinalPrice:  float64(v.Qty * prod.Price),
 		}
 
 		if prod.Discount != nil {
 			if prod.Discount.Type == params.BuyN {
 				multiplier := v.Qty / prod.Discount.Qty
 				remains := v.Qty % prod.Discount.Qty
-				prd.TotalFinalPrice = int64(math.Round(float64(multiplier*prod.Discount.Result + remains*prod.Price)))
+				//prd.TotalFinalPrice = int64(math.Round(float64(multiplier*prod.Discount.Result + remains*prod.Price)))
+				prd.TotalFinalPrice = float64(multiplier*prod.Discount.Result) + float64(remains*prod.Price)
 			} else if prod.Discount.Type == params.Percentage {
-				prd.TotalFinalPrice = int64(math.Round(float64(v.Qty * (prod.Price - prod.Price*prod.Discount.Result/100))))
+				//prd.TotalFinalPrice = int64(math.Round(float64(v.Qty * (prod.Price - prod.Price*prod.Discount.Result/100))))
+				prd.TotalFinalPrice = float64(v.Qty) * (float64(prod.Price) - float64(prod.Price*prod.Discount.Result)/100)
 			}
 		}
 
@@ -114,15 +115,6 @@ func (c orderUC) SubTotal(req []model.SubTotalReq) (model.SubTotal, error) {
 	res.Subtotal = total
 
 	return res, nil
-}
-
-func (c orderUC) Delete(id uint) error {
-	err := c.orderQ.Delete(id)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (c orderUC) List(req model.OrderPaginated) (model.ListOrderResponse, error) {

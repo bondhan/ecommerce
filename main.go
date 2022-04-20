@@ -16,6 +16,7 @@ func main() {
 	isProd, m := config.NewLogConf(os.Getenv("ENV"), os.Getenv("APP_NAME"))
 	logger := driver.NewLogInstance(isProd, m)
 
+	// create database if not exist
 	migrations.CreateDB(logger, os.Getenv("MYSQL_HOST"), os.Getenv("MYSQL_PORT"),
 		os.Getenv("MYSQL_USER"), os.Getenv("MYSQL_PASSWORD"), os.Getenv("MYSQL_DBNAME"))
 
@@ -36,6 +37,7 @@ func main() {
 		}
 	}(logger, sqlDBConn)
 
+	// migration up
 	if err := migrations.MigrateMysqlUp(logger, sqlDBConn); err != nil {
 		logger.Errorf("migrate err: %s", err)
 		return

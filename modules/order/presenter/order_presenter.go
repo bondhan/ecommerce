@@ -35,22 +35,6 @@ func (c *orderP) Create(w http.ResponseWriter, r *http.Request) {
 	SuccessJSON(w, http.StatusOK, struct{}{})
 }
 
-func (c *orderP) Update(w http.ResponseWriter, r *http.Request) {
-	//req, err := model.UpdateOrder(r)
-	//if err != nil {
-	//	Error(w, http.StatusBadRequest, err)
-	//	return
-	//}
-	//
-	//err = c.OrderUC.Update(req)
-	//if err != nil {
-	//	Error(w, http.StatusBadRequest, err)
-	//	return
-	//}
-
-	Success(w, http.StatusOK)
-}
-
 func (c *orderP) SubTotal(w http.ResponseWriter, r *http.Request) {
 	req, err := model.NewSubtotalOrder(r)
 	if err != nil {

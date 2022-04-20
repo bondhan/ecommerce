@@ -10,10 +10,8 @@ import (
 	"github.com/bondhan/ecommerce/modules/product/model"
 	"time"
 
-	"github.com/go-chi/chi"
 	"github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
-	"github.com/spf13/cast"
 	"net/http"
 	"strconv"
 )
@@ -46,52 +44,6 @@ func (c CreateOrderReq) Validate() error {
 		validation.Field(&c.PassCode, validation.Required, is.Digit,
 			validation.Length(6, 6)),
 	)
-}
-
-func NewOrder(r *http.Request) (CreateOrderReq, error) {
-	var req CreateOrderReq
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&req); err != nil {
-		return req, err
-	}
-
-	err := req.Validate()
-	if err != nil {
-		return req, err
-	}
-
-	return req, nil
-}
-
-func UpdateOrder(r *http.Request) (CreateOrderUpdate, error) {
-	IDStr := chi.URLParam(r, "id")
-	ID := cast.ToUint(IDStr)
-	if ID == 0 {
-		return CreateOrderUpdate{}, ecommerceerror.ErrOrderNotFound
-	}
-
-	req := CreateOrderUpdate{ID: ID}
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&req); err != nil {
-		return req, err
-	}
-
-	err := req.Validate()
-	if err != nil {
-		return req, err
-	}
-
-	return req, nil
-}
-
-func GetOrderID(r *http.Request) (uint, error) {
-	IDStr := chi.URLParam(r, "id")
-	ID := cast.ToUint(IDStr)
-	if ID == 0 {
-		return 0, ecommerceerror.ErrOrderNotFound
-	}
-
-	return ID, nil
 }
 
 type OrderPaginatedReq struct {
@@ -143,8 +95,8 @@ type OrderPaginated struct {
 }
 
 type SubTotalReq struct {
-	ProductID uint  `json:"productId"'`
-	Qty       int64 `json:"qty"'`
+	ProductID uint  `json:"productId"`
+	Qty       int64 `json:"qty"`
 }
 
 func (c SubTotalReq) Validate() error {
@@ -183,20 +135,20 @@ type ProductSubTotal struct {
 	Image            string                `json:"image"`
 	Discount         *model.DiscountDetail `json:"discount"`
 	Qty              int64                 `json:"qty"`
-	TotalNormalPrice int64                 `json:"totalNormalPrice"`
-	TotalFinalPrice  int64                 `json:"totalFinalPrice"`
+	TotalNormalPrice float64               `json:"totalNormalPrice"`
+	TotalFinalPrice  float64               `json:"totalFinalPrice"`
 }
 
 type SubTotal struct {
-	Subtotal int64             `json:"subtotal"`
+	Subtotal float64           `json:"subtotal"`
 	Products []ProductSubTotal `json:"products"`
 }
 
 type OrderReq struct {
-	CashierID uint          `json:"cashierId"'`
-	PaymentID uint          `json:"paymentId"'`
-	TotalPaid int64         `json:"totalPaid"'`
-	Products  []SubTotalReq `json:"products"'`
+	CashierID uint          `json:"cashierId"`
+	PaymentID uint          `json:"paymentId"`
+	TotalPaid float64       `json:"totalPaid"`
+	Products  []SubTotalReq `json:"products"`
 }
 
 func NewSOrder(r *http.Request) (OrderReq, error) {
@@ -231,15 +183,15 @@ func NewSOrder(r *http.Request) (OrderReq, error) {
 }
 
 type OrderTotal struct {
-	OrderID        uint   `json:"orderId"`
-	CashiersID     uint   `json:"cashiersId"`
-	PaymentTypesID uint   `json:"paymentTypesId"`
-	TotalPrice     int64  `json:"totalPrice"`
-	TotalPaid      int64  `json:"totalPaid"`
-	TotalReturn    int64  `json:"totalReturn"`
-	ReceiptID      string `json:"receiptId"`
-	UpdatedAt      string `json:"updatedAt"`
-	CreatedAt      string `json:"createdAt"`
+	OrderID        uint    `json:"orderId"`
+	CashiersID     uint    `json:"cashiersId"`
+	PaymentTypesID uint    `json:"paymentTypesId"`
+	TotalPrice     float64 `json:"totalPrice"`
+	TotalPaid      float64 `json:"totalPaid"`
+	TotalReturn    float64 `json:"totalReturn"`
+	ReceiptID      string  `json:"receiptId"`
+	UpdatedAt      string  `json:"updatedAt"`
+	CreatedAt      string  `json:"createdAt"`
 }
 
 type OrderTotalResp struct {
@@ -279,6 +231,6 @@ type OrderDetail struct {
 }
 
 type ListOrderResponse struct {
-	OrderDetails []OrderDetail  `json:"orders"'`
-	Meta         basemodel.Meta `json:"meta"'`
+	OrderDetails []OrderDetail  `json:"orders"`
+	Meta         basemodel.Meta `json:"meta"`
 }

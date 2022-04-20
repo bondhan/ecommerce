@@ -138,6 +138,6 @@ type PaymentPaginated struct {
 }
 
 type ListResponse struct {
-	Payments []Payment      `json:"payments"'`
-	Meta     basemodel.Meta `json:"meta"'`
+	Payments []Payment      `json:"payments"`
+	Meta     basemodel.Meta `json:"meta"`
 }

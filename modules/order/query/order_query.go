@@ -104,16 +104,6 @@ func (c *orderQ) Insert(req model.OrderTotal, data []model.ProductSubTotal) (dom
 	return newOrder, nil
 }
 
-func (c *orderQ) Update(req model.CreateOrderUpdate) error {
-
-	return nil
-}
-
-func (c *orderQ) Delete(id uint) error {
-
-	return nil
-}
-
 func (c *orderQ) List(req model.OrderPaginated) ([]model.OrderDetailDB, int64, error) {
 	orders := []model.OrderDetailDB{}
 	var limit, skip = 0, 0
