@@ -38,10 +38,6 @@ type Passcode struct {
 type Token struct {
 	Token string `json:"token"`
 }
-type CreateCashierUpdate struct {
-	ID uint
-	CreateCashierReq
-}
 
 func (c CreateCashierReq) Validate() error {
 	return validation.ValidateStruct(&c,
@@ -49,6 +45,12 @@ func (c CreateCashierReq) Validate() error {
 		validation.Field(&c.PassCode, validation.Required, is.Digit,
 			validation.Length(6, 6)),
 	)
+}
+
+type CreateCashierUpdate struct {
+	ID       uint
+	Name     string `json:"name"`
+	PassCode string `json:"passcode"`
 }
 
 func NewCashier(r *http.Request) (CreateCashierReq, error) {
@@ -105,11 +107,6 @@ func UpdateCashier(r *http.Request) (CreateCashierUpdate, error) {
 	req := CreateCashierUpdate{ID: ID}
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&req); err != nil {
-		return req, err
-	}
-
-	err := req.Validate()
-	if err != nil {
 		return req, err
 	}
 

@@ -47,8 +47,16 @@ func (c *cashierQ) Update(req model.CreateCashierUpdate) error {
 		return err
 	}
 
+	cashier := domain.Cashiers{}
+	if len(req.Name) > 0 {
+		cashier.Name = req.Name
+	}
+	if len(req.PassCode) > 0 {
+		cashier.Passcode = req.PassCode
+	}
+
 	res := c.gormDB.Where("id = ? and updated_at = ?", oldCashier.ID, oldCashier.UpdatedAt).Model(&oldCashier).
-		Updates(domain.Cashiers{Name: req.Name, Passcode: req.PassCode})
+		Updates(cashier)
 	if err != nil {
 		return err
 	}
