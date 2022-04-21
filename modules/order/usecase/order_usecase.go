@@ -12,6 +12,7 @@ import (
 	queryproduct "github.com/bondhan/ecommerce/modules/product/query"
 	usecaseproduct "github.com/bondhan/ecommerce/modules/product/usecase"
 	"github.com/spf13/cast"
+	"math"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -101,7 +102,7 @@ func (c orderUC) SubTotal(req []model.SubTotalReq) (model.SubTotal, error) {
 				prd.TotalFinalPrice = float64(multiplier*prod.Discount.Result) + float64(remains*prod.Price)
 			} else if prod.Discount.Type == params.Percentage {
 				//prd.TotalFinalPrice = int64(math.Round(float64(v.Qty * (prod.Price - prod.Price*prod.Discount.Result/100))))
-				prd.TotalFinalPrice = float64(v.Qty) * (float64(prod.Price) - float64(prod.Price*prod.Discount.Result)/100)
+				prd.TotalFinalPrice = float64(v.Qty) * (float64(prod.Price) - math.Floor(float64(prod.Price*prod.Discount.Result))/100)
 			}
 		}
 
