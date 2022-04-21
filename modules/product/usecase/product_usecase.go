@@ -117,6 +117,7 @@ func (c productUC) List(req model.ProductPaginated) (model.ListResponse, error) 
 
 	return res, nil
 }
+
 func (c productUC) Detail(id uint) (model.ProductDetail, error) {
 	v, err := c.productQ.Detail(id)
 	if err != nil {

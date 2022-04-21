@@ -8,6 +8,8 @@ import (
 	modelcashier "github.com/bondhan/ecommerce/modules/cashier/model"
 	modelpayment "github.com/bondhan/ecommerce/modules/payment/model"
 	"github.com/bondhan/ecommerce/modules/product/model"
+	"github.com/go-chi/chi"
+	"github.com/spf13/cast"
 	"time"
 
 	"github.com/go-ozzo/ozzo-validation"
@@ -231,4 +233,47 @@ type OrderDetail struct {
 type ListOrderResponse struct {
 	OrderDetails []OrderDetail  `json:"orders"`
 	Meta         basemodel.Meta `json:"meta"`
+}
+
+func GetOrderID(r *http.Request) (uint, error) {
+	IDStr := chi.URLParam(r, "id")
+	ID := cast.ToUint(IDStr)
+	if ID == 0 {
+		return 0, ecommerceerror.ErrOrderNotFound
+	}
+
+	return ID, nil
+}
+
+type OrderProductDetail struct {
+	OrderID        uint                 `json:"orderId"`
+	CashiersID     uint                 `json:"cashiersId"`
+	PaymentTypesID uint                 `json:"paymentTypesId"`
+	TotalPrice     int64                `json:"totalPrice"`
+	TotalPaid      int64                `json:"totalPaid"`
+	TotalReturn    int64                `json:"totalReturn"`
+	ReceiptID      string               `json:"receiptId"`
+	CreatedAt      string               `json:"createdAt"`
+	Cashier        modelcashier.Cashier `json:"cashier"`
+	Payment        modelpayment.Payment `json:"paymentType"`
+}
+
+type OrderProductSubTotal struct {
+	ProductID        uint                  `json:"productId"`
+	Name             string                `json:"name"`
+	Price            int64                 `json:"price"`
+	DiscountID       *uint                 `json:"discountsId"`
+	Discount         *model.DiscountDetail `json:"discount"`
+	Qty              int64                 `json:"qty"`
+	TotalNormalPrice float64               `json:"totalNormalPrice"`
+	TotalFinalPrice  float64               `json:"totalFinalPrice"`
+}
+
+type DetailOrderProductResponse struct {
+	OrderDetail OrderProductDetail     `json:"order"`
+	Products    []OrderProductSubTotal `json:"products"`
+}
+
+type DownloadStatus struct {
+	IsDownloaded bool `json:"isDownload"`
 }

@@ -66,16 +66,49 @@ func (c *orderP) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *orderP) Detail(w http.ResponseWriter, r *http.Request) {
+	id, err := model.GetOrderID(r)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
 
-	SuccessJSON(w, http.StatusOK, struct{}{})
+	res, err := c.OrderUC.Detail(id)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	SuccessJSON(w, http.StatusOK, res)
 }
 
 func (c *orderP) Download(w http.ResponseWriter, r *http.Request) {
+	id, err := model.GetOrderID(r)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
 
-	Success(w, http.StatusOK)
+	res, err := c.OrderUC.Download(id)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	SuccessJSON(w, http.StatusOK, res)
 }
 
 func (c *orderP) DownloadStatus(w http.ResponseWriter, r *http.Request) {
+	id, err := model.GetOrderID(r)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
 
-	Success(w, http.StatusOK)
+	res, err := c.OrderUC.CheckDownload(id)
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	SuccessJSON(w, http.StatusOK, res)
 }

@@ -75,7 +75,7 @@ func NewDBInstance(logger *logrus.Logger, confDsnMaster string, poolType config.
 	//default:
 	//	level = log.Info
 	//}
-	//
+
 	//l := &GormLogger{Logger: logger}
 
 	db, err := gorm.Open(mysql.Open(confDsnMaster), &gorm.Config{

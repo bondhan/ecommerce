@@ -110,6 +110,10 @@ func UpdateCashier(r *http.Request) (CreateCashierUpdate, error) {
 		return req, err
 	}
 
+	if req.Name == "" {
+		return CreateCashierUpdate{}, ecommerceerror.ErrCashierNotMatch
+	}
+
 	return req, nil
 }
 

@@ -165,15 +165,89 @@ func (c orderUC) List(req model.OrderPaginated) (model.ListOrderResponse, error)
 
 	return res, nil
 }
-func (c orderUC) Detail(id uint) (model.Order, error) {
-	data, err := c.orderQ.Detail(id)
+func (c orderUC) Detail(id uint) (model.DetailOrderProductResponse, error) {
+	// get order
+	data, err := c.orderQ.DetailOrdersById(id)
 	if err != nil {
-		return model.Order{}, err
+		return model.DetailOrderProductResponse{}, err
 	}
 
-	order := model.Order{
-		OrderID: data.ID,
+	cashier := modelcashier.Cashier{
+		CashierID: data.CashiersID,
+		Name:      data.CashierName,
+	}
+	payment := modelpayment.Payment{
+		PaymentID: data.PaymentTypesID,
+		Name:      data.PaymentName,
+		Type:      data.PaymentType,
+		Logo:      data.PaymentLogo,
+	}
+	od := model.OrderProductDetail{
+		OrderID:     data.OrderID,
+		TotalPrice:  data.TotalPrice,
+		TotalPaid:   data.TotalPaid,
+		TotalReturn: data.TotalReturn,
+		ReceiptID:   fmt.Sprintf("ID%03d", data.OrderID),
+		CreatedAt:   data.CreatedAt.UTC().Format(time.RFC3339),
+	}
+	od.Cashier = cashier
+	od.Payment = payment
+	od.CashiersID = cashier.CashierID
+	od.PaymentTypesID = payment.PaymentID
+
+	// get order details
+	listOfOrderDetails, err := c.orderQ.ListOrderDetailsByOrderId(data.OrderID)
+	if err != nil {
+		return model.DetailOrderProductResponse{}, err
 	}
 
-	return order, nil
+	var prds []model.OrderProductSubTotal
+	for _, v := range listOfOrderDetails {
+		detail, err := c.productUC.Detail(v.ProductID)
+		if err != nil {
+			return model.DetailOrderProductResponse{}, err
+		}
+
+		prd := model.OrderProductSubTotal{
+			ProductID:        detail.ProductID,
+			Name:             v.Name,
+			Price:            v.Price,
+			DiscountID:       v.DiscountID,
+			Discount:         detail.Discount,
+			Qty:              v.Qty,
+			TotalNormalPrice: v.TotalNormalPrice,
+			TotalFinalPrice:  v.TotalFinalPrice,
+		}
+
+		prds = append(prds, prd)
+	}
+
+	orderProductDetail := model.DetailOrderProductResponse{
+		OrderDetail: od,
+		Products:    prds,
+	}
+
+	return orderProductDetail, nil
+}
+
+func (c orderUC) CheckDownload(id uint) (model.DownloadStatus, error) {
+	order, err := c.orderQ.Detail(id)
+	if err != nil {
+		return model.DownloadStatus{}, err
+	}
+
+	status := model.DownloadStatus{IsDownloaded: false}
+	if order.Downloaded != 0 {
+		status.IsDownloaded = true
+	}
+	return status, nil
+}
+
+func (c orderUC) Download(id uint) ([]byte, error) {
+	bytes, err := c.orderQ.SetDownload(id, 1)
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes, nil
 }

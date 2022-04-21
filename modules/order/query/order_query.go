@@ -181,6 +181,59 @@ func (c *orderQ) List(req model.OrderPaginated) ([]model.OrderDetailDB, int64, e
 	return orders, count, err
 }
 
+func (c *orderQ) DetailOrdersById(id uint) (*model.OrderDetailDB, error) {
+	var order *model.OrderDetailDB
+
+	query := `
+		select
+			o.id,
+			o.cashier_id,
+			o.payment_type_id,
+			o.total_price,
+			o.total_paid,
+			o.total_return,
+			o.updated_at,
+			o.created_at,
+			c.id as cashier_id,
+			c.name as cashier_name,
+			pt.id as payment_type_id, 
+			pt.name as payment_name,
+			pt.type as payment_type,
+			pt.logo as payment_logo	
+		from
+			orders o
+		inner join payment_types pt on
+			pt.id = o.payment_type_id
+		inner join cashiers c on
+			c.id = o.cashier_id
+		where
+			o.deleted_at is null
+			and pt.deleted_at is NULL 
+			and c.deleted_at is null
+			and o.id = ?
+	`
+
+	err := c.gormDB.Raw(query, id).Scan(&order).Error
+	if err != nil {
+		return order, err
+	}
+
+	if order == nil {
+		return order, ecommerceerror.ErrOrderNotFound
+	}
+
+	return order, err
+}
+
+func (c *orderQ) ListOrderDetailsByOrderId(id uint) ([]domain.OrderDetails, error) {
+	var orderDetails []domain.OrderDetails
+	err := c.gormDB.Where("order_id = ?", id).First(&orderDetails).Error
+	if err != nil {
+		return []domain.OrderDetails{}, err
+	}
+	return orderDetails, err
+}
+
 func (c *orderQ) Detail(id uint) (domain.Orders, error) {
 	var order domain.Orders
 	err := c.gormDB.Where("id = ?", id).First(&order).Error
@@ -190,5 +243,39 @@ func (c *orderQ) Detail(id uint) (domain.Orders, error) {
 		}
 		return domain.Orders{}, err
 	}
-	return order, err
+	return order, nil
+}
+
+func (c *orderQ) SetDownload(id uint, status int) ([]byte, error) {
+
+	var order domain.Orders
+	err := c.gormDB.Where("id = ?", id).First(&order).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ecommerceerror.ErrOrderNotFound
+		}
+		return nil, err
+	}
+
+	tx := c.gormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	res := c.gormDB.Where("id = ? and updated_at = ?", order.ID, order.UpdatedAt).Model(&order).
+		Updates(map[string]interface{}{"downloaded": status})
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return nil, ecommerceerror.ErrOrderNotFound
+		}
+		return nil, res.Error
+	}
+
+	if res.RowsAffected == 0 {
+		return nil, ecommerceerror.ErrOrderNotFound
+	}
+
+	return []byte(fmt.Sprintf("%+v", order)), nil
 }

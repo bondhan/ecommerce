@@ -139,10 +139,12 @@ func (c *productQ) Delete(id uint) error {
 		return res.Error
 	}
 
-	res = tx.Unscoped().Where("id = ?", oldProduct.DiscountID).Model(&discount).Delete(&discount)
-	if res.Error != nil {
-		tx.Rollback()
-		return res.Error
+	if oldProduct.DiscountID != nil {
+		res = tx.Unscoped().Where("id = ?", oldProduct.DiscountID).Model(&discount).Delete(&discount)
+		if res.Error != nil {
+			tx.Rollback()
+			return res.Error
+		}
 	}
 
 	err = tx.Commit().Error

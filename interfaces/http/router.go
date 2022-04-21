@@ -50,13 +50,12 @@ func NewRouter(logger *logrus.Logger, hnd *Handler, jwtKey string) *chi.Mux {
 	})
 
 	r.Route("/orders", func(rc chi.Router) {
-		rc.Use(requestlogmsv2.CustomLoggerV2(logger, nil))
 		rc.Post("/subtotal", JWTValidator(jwtKey, hnd.order.SubTotal))
 		rc.Post("/", JWTValidator(jwtKey, hnd.order.Create))
 		rc.Get("/", hnd.order.List)
 		rc.Get("/{id}", JWTValidator(jwtKey, hnd.order.Detail))
-		rc.Get("/{id}/download", JWTValidator(jwtKey, hnd.order.Download))
-		rc.Get("/{id}/check-download", JWTValidator(jwtKey, hnd.order.DownloadStatus))
+		rc.Get("/{id}/download", requestlogmsv2.CustomLoggerV2PerHandler(logger, nil, JWTValidator(jwtKey, hnd.order.Download)))
+		rc.Get("/{id}/check-download", requestlogmsv2.CustomLoggerV2PerHandler(logger, nil, JWTValidator(jwtKey, hnd.order.DownloadStatus)))
 	})
 
 	r.Get("/revenues", JWTValidator(jwtKey, http.NotFound))
