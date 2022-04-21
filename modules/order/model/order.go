@@ -130,9 +130,7 @@ func NewSubtotalOrder(r *http.Request) ([]SubTotalReq, error) {
 type ProductSubTotal struct {
 	ProductID        uint                  `json:"productId"`
 	Name             string                `json:"name"`
-	Stock            int64                 `json:"stock"`
 	Price            int64                 `json:"price"`
-	Image            string                `json:"image"`
 	Discount         *model.DiscountDetail `json:"discount"`
 	Qty              int64                 `json:"qty"`
 	TotalNormalPrice float64               `json:"totalNormalPrice"`
@@ -184,7 +182,7 @@ func NewSOrder(r *http.Request) (OrderReq, error) {
 
 type OrderTotal struct {
 	OrderID        uint    `json:"orderId"`
-	CashiersID     uint    `json:"cashiersId"`
+	CashiersID     string  `json:"cashiersId"`
 	PaymentTypesID uint    `json:"paymentTypesId"`
 	TotalPrice     float64 `json:"totalPrice"`
 	TotalPaid      float64 `json:"totalPaid"`

@@ -31,8 +31,6 @@ func (c *orderP) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	SuccessJSON(w, http.StatusOK, res)
-
-	SuccessJSON(w, http.StatusOK, struct{}{})
 }
 
 func (c *orderP) SubTotal(w http.ResponseWriter, r *http.Request) {

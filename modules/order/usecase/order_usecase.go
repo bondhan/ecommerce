@@ -11,6 +11,7 @@ import (
 	modelpayment "github.com/bondhan/ecommerce/modules/payment/model"
 	queryproduct "github.com/bondhan/ecommerce/modules/product/query"
 	usecaseproduct "github.com/bondhan/ecommerce/modules/product/usecase"
+	"github.com/spf13/cast"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -40,7 +41,7 @@ func (c orderUC) Create(req model.OrderReq) (model.OrderTotalResp, error) {
 	}
 
 	order := model.OrderTotal{
-		CashiersID:     req.CashierID,
+		CashiersID:     cast.ToString(req.CashierID),
 		PaymentTypesID: req.PaymentID,
 		TotalPrice:     data.Subtotal,
 		TotalPaid:      req.TotalPaid,
@@ -54,7 +55,7 @@ func (c orderUC) Create(req model.OrderReq) (model.OrderTotalResp, error) {
 	resp := model.OrderTotalResp{
 		Order: model.OrderTotal{
 			OrderID:        res.ID,
-			CashiersID:     res.CashierID,
+			CashiersID:     cast.ToString(res.CashierID),
 			PaymentTypesID: res.PaymentTypeID,
 			TotalPrice:     res.TotalPrice,
 			TotalPaid:      res.TotalPaid,
@@ -85,9 +86,7 @@ func (c orderUC) SubTotal(req []model.SubTotalReq) (model.SubTotal, error) {
 		prd := model.ProductSubTotal{
 			ProductID:        prod.ProductID,
 			Name:             prod.Name,
-			Stock:            prod.Stock,
 			Price:            prod.Price,
-			Image:            prod.Image,
 			Discount:         prod.Discount,
 			Qty:              v.Qty,
 			TotalNormalPrice: float64(v.Qty * prod.Price),

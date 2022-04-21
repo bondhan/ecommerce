@@ -7,6 +7,7 @@ import (
 	"github.com/bondhan/ecommerce/domain"
 	"github.com/bondhan/ecommerce/modules/order/model"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/cast"
 	"gorm.io/gorm"
 )
 
@@ -27,7 +28,7 @@ func (c *orderQ) Insert(req model.OrderTotal, data []model.ProductSubTotal) (dom
 		TotalPrice:    req.TotalPrice,
 		TotalPaid:     req.TotalPaid,
 		TotalReturn:   req.TotalReturn,
-		CashierID:     req.CashiersID,
+		CashierID:     cast.ToUint(req.CashiersID),
 		PaymentTypeID: req.PaymentTypesID,
 		InvoicePDF:    req.ReceiptID,
 		Downloaded:    0,
@@ -62,7 +63,7 @@ func (c *orderQ) Insert(req model.OrderTotal, data []model.ProductSubTotal) (dom
 		}
 		// get product stock
 		product := domain.Products{}
-		err := tx.Where("id = ? and deleted_at is null", v.ProductID).First(&product).Error
+		err = tx.Where("id = ? and deleted_at is null", v.ProductID).First(&product).Error
 		if err != nil {
 			tx.Rollback()
 			return domain.Orders{}, err
@@ -70,14 +71,14 @@ func (c *orderQ) Insert(req model.OrderTotal, data []model.ProductSubTotal) (dom
 
 		// sub stock
 		remainStock := product.Stock - v.Qty
-		if remainStock <= 0 {
+		if remainStock < 0 {
 			tx.Rollback()
 			return domain.Orders{}, ecommerceerror.ErrOutOfStock
 		}
 
 		// update stock
 		res := tx.Where("id = ? and updated_at = ?", product.ID, product.UpdatedAt).Model(&product).
-			Updates(domain.Products{Stock: remainStock})
+			Updates(map[string]interface{}{"stock": remainStock})
 		if res.Error != nil {
 			tx.Rollback()
 			return domain.Orders{}, err
