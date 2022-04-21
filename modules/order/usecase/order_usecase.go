@@ -251,3 +251,27 @@ func (c orderUC) Download(id uint) ([]byte, error) {
 
 	return bytes, nil
 }
+
+func (c orderUC) Solds() ([]model.Solds, error) {
+	solds, err := c.orderQ.Solds()
+	if err != nil {
+		return []model.Solds{}, err
+	}
+	return solds, nil
+}
+
+func (c orderUC) Revenues() (model.Revenue, error) {
+	res := model.Revenue{}
+
+	revs, err := c.orderQ.Revenues()
+	if err != nil {
+		return res, err
+	}
+
+	for _, v := range revs {
+		res.TotalRevenue += v.TotalAmount
+	}
+	res.RevenueByPaymentTypes = revs
+
+	return res, nil
+}

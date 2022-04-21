@@ -279,3 +279,59 @@ func (c *orderQ) SetDownload(id uint, status int) ([]byte, error) {
 
 	return []byte(fmt.Sprintf("%+v", order)), nil
 }
+
+func (c *orderQ) Solds() ([]model.Solds, error) {
+	sold := []model.Solds{}
+	query := `
+		select
+			product_id as product_id,
+			name,
+			sum(qty) as total_qty,
+			sum(total_final_price) as total_amount
+		from
+			order_details
+		where
+			deleted_at is null
+			and DATE(created_at) = DATE(NOW())
+		group by
+			product_id,
+			name
+	`
+
+	err := c.gormDB.Raw(query).Scan(&sold).Error
+	if err != nil {
+		return sold, err
+	}
+
+	return sold, nil
+}
+
+func (c *orderQ) Revenues() ([]model.RevenueByPaymentType, error) {
+	rev := []model.RevenueByPaymentType{}
+	query := `
+		select 
+			o.payment_type_id,
+			pt.name,
+			pt.logo,
+			sum(o.total_price) as total_amount
+		from
+			orders o
+		inner join payment_types pt on
+			pt.id = o.payment_type_id
+		where
+			DATE(o.created_at) = DATE(NOW())
+			and o.deleted_at is null
+			and pt.deleted_at is null
+		group by
+			o.payment_type_id,
+			pt.name,
+			pt.logo	
+	`
+
+	err := c.gormDB.Raw(query).Scan(&rev).Error
+	if err != nil {
+		return rev, err
+	}
+
+	return rev, nil
+}

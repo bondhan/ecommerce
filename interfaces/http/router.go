@@ -1,11 +1,9 @@
 package handler
 
 import (
-	requestlogmsv2 "github.com/bondhan/ecommerce/infrastructure/middleware/requestlogms_v2"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/sirupsen/logrus"
-	"net/http"
 )
 
 func NewRouter(logger *logrus.Logger, hnd *Handler, jwtKey string) *chi.Mux {
@@ -54,12 +52,12 @@ func NewRouter(logger *logrus.Logger, hnd *Handler, jwtKey string) *chi.Mux {
 		rc.Post("/", JWTValidator(jwtKey, hnd.order.Create))
 		rc.Get("/", hnd.order.List)
 		rc.Get("/{id}", JWTValidator(jwtKey, hnd.order.Detail))
-		rc.Get("/{id}/download", requestlogmsv2.CustomLoggerV2PerHandler(logger, nil, JWTValidator(jwtKey, hnd.order.Download)))
-		rc.Get("/{id}/check-download", requestlogmsv2.CustomLoggerV2PerHandler(logger, nil, JWTValidator(jwtKey, hnd.order.DownloadStatus)))
+		rc.Get("/{id}/download", JWTValidator(jwtKey, hnd.order.Download))
+		rc.Get("/{id}/check-download", JWTValidator(jwtKey, hnd.order.DownloadStatus))
 	})
 
-	r.Get("/revenues", JWTValidator(jwtKey, http.NotFound))
-	r.Get("/solds", JWTValidator(jwtKey, http.NotFound))
+	r.Get("/revenues", JWTValidator(jwtKey, hnd.order.Revenues))
+	r.Get("/solds", JWTValidator(jwtKey, hnd.order.Solds))
 
 	return r
 }

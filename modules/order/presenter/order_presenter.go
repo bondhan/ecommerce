@@ -112,3 +112,23 @@ func (c *orderP) DownloadStatus(w http.ResponseWriter, r *http.Request) {
 
 	SuccessJSON(w, http.StatusOK, res)
 }
+
+func (c *orderP) Revenues(w http.ResponseWriter, r *http.Request) {
+	res, err := c.OrderUC.Revenues()
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	SuccessJSON(w, http.StatusOK, res)
+
+}
+
+func (c *orderP) Solds(w http.ResponseWriter, r *http.Request) {
+	res, err := c.OrderUC.Solds()
+	if err != nil {
+		Error(w, http.StatusBadRequest, err)
+		return
+	}
+	SuccessJSON(w, http.StatusOK, res)
+}

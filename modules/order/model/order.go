@@ -277,3 +277,22 @@ type DetailOrderProductResponse struct {
 type DownloadStatus struct {
 	IsDownloaded bool `json:"isDownload"`
 }
+
+type RevenueByPaymentType struct {
+	PaymentTypeID uint    `gorm:"column:payment_type_id"  json:"paymentTypeId"`
+	Name          string  `gorm:"column:name"  json:"name"`
+	Logo          *string `gorm:"column:logo"  json:"logo"`
+	TotalAmount   float64 `gorm:"column:total_amount"  json:"totalAmount"`
+}
+
+type Revenue struct {
+	TotalRevenue          float64                `json:"totalRevenue"`
+	RevenueByPaymentTypes []RevenueByPaymentType `json:"paymentTypes"`
+}
+
+type Solds struct {
+	ProductID   uint    `gorm:"column:product_id" json:"productId"`
+	Name        string  `gorm:"column:name" json:"name"`
+	TotalQty    int64   `gorm:"column:total_qty" json:"totalQty"`
+	TotalAmount float64 `gorm:"column:total_amount" json:"totalAmount"`
+}

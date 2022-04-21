@@ -11,4 +11,6 @@ type IOrderP interface {
 	DownloadStatus(w http.ResponseWriter, r *http.Request)
 	List(w http.ResponseWriter, r *http.Request)
 	Detail(w http.ResponseWriter, r *http.Request)
+	Revenues(w http.ResponseWriter, r *http.Request)
+	Solds(w http.ResponseWriter, r *http.Request)
 }

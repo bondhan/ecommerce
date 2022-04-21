@@ -9,4 +9,6 @@ type IOrderUC interface {
 	Detail(id uint) (model.DetailOrderProductResponse, error)
 	CheckDownload(id uint) (model.DownloadStatus, error)
 	Download(id uint) ([]byte, error)
+	Solds() ([]model.Solds, error)
+	Revenues() (model.Revenue, error)
 }

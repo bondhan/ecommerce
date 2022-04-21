@@ -12,4 +12,6 @@ type IOrderQ interface {
 	ListOrderDetailsByOrderId(id uint) ([]domain.OrderDetails, error)
 	Detail(id uint) (domain.Orders, error)
 	SetDownload(id uint, status int) ([]byte, error)
+	Solds() ([]model.Solds, error)
+	Revenues() ([]model.RevenueByPaymentType, error)
 }
