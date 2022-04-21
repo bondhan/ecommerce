@@ -12,6 +12,7 @@ type ConnPoolType struct {
 	MaxLifeTime int64
 }
 
+// NewDsnMYSQLDBConf will return data source naming for MYSQL
 func NewDsnMYSQLDBConf(dbHost, dbPort, dbUser, dbPassword, dbName string) string {
 
 	dsnDB := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=true", dbUser,
@@ -20,6 +21,7 @@ func NewDsnMYSQLDBConf(dbHost, dbPort, dbUser, dbPassword, dbName string) string
 	return dsnDB
 }
 
+// NewConnPoolConf will return the consolidated connection pool
 func NewConnPoolConf(logger *logrus.Logger, maxOpen string, maxIdle string, maxLifeTimeMin string) ConnPoolType {
 	maxOpenConn, err := strconv.Atoi(maxOpen)
 	if err != nil {

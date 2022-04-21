@@ -140,7 +140,6 @@ func NewCashierPaginatedReq(r *http.Request) (CashierPaginated, error) {
 		Skip:  skip,
 		Limit: limit,
 	}
-
 	err := validation.ValidateStruct(&cashiers,
 		validation.Field(&cashiers.Limit, is.Digit),
 		validation.Field(&cashiers.Skip, is.Digit),

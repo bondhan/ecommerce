@@ -47,7 +47,7 @@ RUN mkdir /app
 WORKDIR /app
 
 COPY --from=build-env /src/ecommerce/bin/$APP_NAME /app/$APP_NAME
-COPY --from=build-env /src/ecommerce/.env /app/
+COPY --from=build-env /src/ecommerce/.env_sample /app/.env
 COPY --from=build-env /src/ecommerce/migrations /app/migrations
 
 # below for testing only

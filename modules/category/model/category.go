@@ -134,6 +134,6 @@ type CategoryPaginated struct {
 }
 
 type ListResponse struct {
-	Categories []Category     `json:"categories"'`
-	Meta       basemodel.Meta `json:"meta"'`
+	Categories []Category     `json:"categories"`
+	Meta       basemodel.Meta `json:"meta"`
 }

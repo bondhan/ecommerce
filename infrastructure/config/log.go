@@ -4,6 +4,7 @@ const (
 	Production = "production"
 )
 
+// NewLogConf will return the production status and mapping for logging
 func NewLogConf(env string, appName string) (bool, map[string]interface{}) {
 	isProd := false
 	if env == Production {
