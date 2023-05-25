@@ -1,6 +1,6 @@
 # ecommerce
 
-a simple E2E ecommerce REST api. Author: bondhan.novandy@gmail.com
+a simple E2E ecommerce REST api. for gotoko technical test. Author: bondhan.novandy@gmail.com
 
 ## build & run
 ```bash
