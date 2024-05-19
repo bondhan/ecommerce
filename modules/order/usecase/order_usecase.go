@@ -12,6 +12,7 @@ import (
 	queryproduct "github.com/bondhan/ecommerce/modules/product/query"
 	usecaseproduct "github.com/bondhan/ecommerce/modules/product/usecase"
 	"github.com/spf13/cast"
+	"math"
 	"time"
 
 	"github.com/sirupsen/logrus"
