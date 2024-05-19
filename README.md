@@ -54,3 +54,8 @@ push:
 ```bash
 docker build --platform linux/amd64  --no-cache -t bono02/ecommerce:v1-linux -f ./Dockerfile .  &&  docker push bono02/ecommerce:v1-linux
 ```
+
+## Result
+[HWY717](https://devcode.gethired.id/job/HWY717)
+
+<a href="/docs/screenshots/devcode-gethired-id-job-HWY717.jpg"><img src="./docs/screenshots/devcode-gethired-id-job-HWY717.jpg" height="500" width="200">
